@@ -1,4 +1,4 @@
-﻿namespace AAUS2_HeapFile
+﻿namespace AAUS2_HeapFile.Interfaces
 {
     public interface IData
     {

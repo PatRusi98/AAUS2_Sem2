@@ -1,4 +1,6 @@
-﻿namespace AAUS2_HeapFile
+﻿using AAUS2_HeapFile.Entities;
+
+namespace AAUS2_HeapFile.Tester
 {
     public class Generator
     {
@@ -30,14 +32,14 @@
 
         private string Name()
         {
-            string[] names = { "John", "Jane", "Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Isabella", 
+            string[] names = { "John", "Jane", "Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Isabella",
                 "Jack", "Kate", "Liam", "Mia", "Noah", "Olivia", "Peter", "Quinn", "Rose" };
             return names[_random.Next(names.Length)];
         }
 
         private string Surname()
         {
-            string[] surnames = { "Doe", "Smith", "Johnson", "Brown", "Wilson", "Moore", "Taylor", "Anderson", "Thomas", "Jackson", 
+            string[] surnames = { "Doe", "Smith", "Johnson", "Brown", "Wilson", "Moore", "Taylor", "Anderson", "Thomas", "Jackson",
                 "Harris", "Clark", "Lewis", "Young", "Walker", "Hall", "Allen", "King", "Baker", "Wright" };
             return surnames[_random.Next(surnames.Length)];
         }

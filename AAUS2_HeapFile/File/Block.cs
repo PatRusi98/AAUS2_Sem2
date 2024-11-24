@@ -1,4 +1,6 @@
-﻿namespace AAUS2_HeapFile
+﻿using AAUS2_HeapFile.Interfaces;
+
+namespace AAUS2_HeapFile.File
 {
     public class Block<T> : IData where T : IRecord<T>
     {
@@ -8,7 +10,7 @@
         public long PreviousEmptyBlockAddress { get; set; } = -1;
         public T[] Records { get; }
 
-        public Block(int blockFactor) 
+        public Block(int blockFactor)
         {
             TotalCount = blockFactor;
             Records = new T[TotalCount];
@@ -64,8 +66,8 @@
 
             Buffer.BlockCopy(previousEmptyAddressBytes, 0, byteArr, offset, previousEmptyAddressBytes.Length);
             offset += previousEmptyAddressBytes.Length;
-            
-            foreach(var record in Records)
+
+            foreach (var record in Records)
             {
                 byte[] recordBytes;
                 if (record == null)
@@ -83,13 +85,13 @@
         public int GetSize()
         {
             var recordSize = Activator.CreateInstance<T>().GetSize();
-            return sizeof(int) + (sizeof(long) * 2) + (TotalCount * recordSize);
+            return sizeof(int) + sizeof(long) * 2 + TotalCount * recordSize;
         }
         #endregion
 
         public T? Get(T record)
         {
-            foreach(var item in Records)
+            foreach (var item in Records)
             {
                 if (item != null && item.Equals(record))
                 {

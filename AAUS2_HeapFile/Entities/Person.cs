@@ -1,6 +1,7 @@
 ﻿using System.Text;
+using AAUS2_HeapFile.Interfaces;
 
-namespace AAUS2_HeapFile
+namespace AAUS2_HeapFile.Entities
 {
     public class Person : IRecord<Person>
     {
@@ -16,22 +17,22 @@ namespace AAUS2_HeapFile
         public string Name
         {
             get => _name.PadRight(_nameLength, '\0');
-            set => _name = value.Length > _nameLength 
-                ? value.Substring(0, _nameLength) 
+            set => _name = value.Length > _nameLength
+                ? value.Substring(0, _nameLength)
                 : value.PadRight(_nameLength, '\0');
         }
-        public string Surname 
-        { 
+        public string Surname
+        {
             get => _surname.PadRight(_surnameLength, '\0');
-            set => _surname = value.Length > _surnameLength 
-                ? value.Substring(0, _surnameLength) 
+            set => _surname = value.Length > _surnameLength
+                ? value.Substring(0, _surnameLength)
                 : value.PadRight(_surnameLength, '\0');
         }
-        public string LicencePlate 
-        { 
+        public string LicencePlate
+        {
             get => _licencePlate.PadRight(_licencePlateLength, '\0');
-            set => _licencePlate = value.Length > _licencePlateLength 
-                ? value.Substring(0, _licencePlateLength) 
+            set => _licencePlate = value.Length > _licencePlateLength
+                ? value.Substring(0, _licencePlateLength)
                 : value.PadRight(_licencePlateLength, '\0');
         }
         public int ID { get; set; }

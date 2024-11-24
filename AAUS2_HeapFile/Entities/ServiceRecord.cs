@@ -1,6 +1,7 @@
 ﻿using System.Text;
+using AAUS2_HeapFile.Interfaces;
 
-namespace AAUS2_HeapFile
+namespace AAUS2_HeapFile.Entities
 {
     public class ServiceRecord : IRecord<ServiceRecord>
     {
@@ -9,12 +10,12 @@ namespace AAUS2_HeapFile
 
         public DateTime Date { get; set; }
         public double Price { get; set; }
-        public string Description 
+        public string Description
         {
-            get => _description.PadRight(_descriptionLength, '\0'); 
-            set => _description = value.Length > _descriptionLength 
-                ? value.Substring(0, _descriptionLength) 
-                : value.PadRight(_descriptionLength, '\0'); 
+            get => _description.PadRight(_descriptionLength, '\0');
+            set => _description = value.Length > _descriptionLength
+                ? value.Substring(0, _descriptionLength)
+                : value.PadRight(_descriptionLength, '\0');
         }
 
         public ServiceRecord()

@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using AAUS2_HeapFile;
+using AAUS2_HeapFile.Entities;
+using AAUS2_HeapFile.File;
 using System.ComponentModel.DataAnnotations;
 
 Console.WriteLine("Hello, World!");

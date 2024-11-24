@@ -1,4 +1,6 @@
-﻿namespace AAUS2_HeapFile
+﻿using AAUS2_HeapFile.Interfaces;
+
+namespace AAUS2_HeapFile.File
 {
     public class HeapFile<T> : IDisposable where T : IRecord<T>
     {
@@ -163,7 +165,7 @@
                 EmptyBlockAddress = address;
                 WriteFileHeader();
             }
-            else if ((block.TotalCount - block.ValidCount) == 1)
+            else if (block.TotalCount - block.ValidCount == 1)
             {
                 if (PartiallyEmptyBlockAddress != -1)
                 {
@@ -253,7 +255,7 @@
 
         private int GetFileHeaderSize()
         {
-            return (3 * sizeof(int)) + (2 * sizeof(long));
+            return 3 * sizeof(int) + 2 * sizeof(long);
         }
         #endregion
     }
