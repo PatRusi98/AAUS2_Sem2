@@ -1,0 +1,260 @@
+﻿namespace AAUS2_HeapFile
+{
+    public class HeapFile<T> : IDisposable where T : IRecord<T>
+    {
+        private int BlocksCount { get; set; }
+        private int BlockFactor { get; set; }
+        private long EmptyBlockAddress { get; set; }
+        private long PartiallyEmptyBlockAddress { get; set; }
+        private string FileName { get; set; }
+        private int BlockSize { get; set; } = -1;
+        private FileStream _file;
+
+        public HeapFile(string fileName, int blockFactor)
+        {
+            FileName = fileName;
+            BlockFactor = blockFactor;
+
+            _file = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+            if (_file.Length > 0)
+            {
+                ReadFileHeader();
+            }
+            else
+            {
+                BlocksCount = 0;
+                EmptyBlockAddress = -1;
+                PartiallyEmptyBlockAddress = -1;
+
+                WriteFileHeader();
+            }
+        }
+
+        public long Insert(T record)
+        {
+            Block<T> block = new(BlockFactor);
+
+            var address = PartiallyEmptyBlockAddress;
+            if (PartiallyEmptyBlockAddress == -1)
+                address = EmptyBlockAddress;
+
+            if (address == -1)
+            {
+                var add = BlocksCount * BlockSize + GetFileHeaderSize();
+                BlocksCount++;
+                block.Insert(record);
+                block.PreviousEmptyBlockAddress = -1;
+                block.NextEmptyBlockAddress = -1;
+                InsertBlockIntoFile(add, block);
+                PartiallyEmptyBlockAddress = add;
+                WriteFileHeader();
+                return add;
+            }
+
+            block = GetBlockFromFile(address);
+            block.Insert(record);
+
+            if (block.ValidCount == block.TotalCount) // osetrenie retazenia
+            {
+                PartiallyEmptyBlockAddress = block.NextEmptyBlockAddress;
+
+                if (PartiallyEmptyBlockAddress != -1)
+                {
+                    var nextBlock = GetBlockFromFile(PartiallyEmptyBlockAddress);
+                    nextBlock.PreviousEmptyBlockAddress = -1;
+                    InsertBlockIntoFile(PartiallyEmptyBlockAddress, nextBlock);
+                }
+                WriteFileHeader();
+            }
+            else if (block.ValidCount == 1)
+            {
+                EmptyBlockAddress = block.NextEmptyBlockAddress;
+                if (EmptyBlockAddress != -1)
+                {
+                    var nextBlock = GetBlockFromFile(EmptyBlockAddress);
+                    nextBlock.PreviousEmptyBlockAddress = -1;
+                    InsertBlockIntoFile(EmptyBlockAddress, nextBlock);
+                }
+
+                PartiallyEmptyBlockAddress = address; // staci takto lebo ked budeme vkladat do prazdneho tak to znamena, ze ciastocne volny neni
+                WriteFileHeader();
+            }
+
+            InsertBlockIntoFile(address, block);
+            return address;
+        }
+
+        public void Delete(long address, T record)
+        {
+            var block = GetBlockFromFile(address);
+            block.Remove(record);
+
+            if (block.ValidCount == 0) // osetrenie zretazenia
+            {
+                if (PartiallyEmptyBlockAddress != address)
+                {
+                    var prevBlock = GetBlockFromFile(block.PreviousEmptyBlockAddress);
+                    prevBlock.NextEmptyBlockAddress = block.NextEmptyBlockAddress;
+                    InsertBlockIntoFile(block.PreviousEmptyBlockAddress, prevBlock);
+
+                    if (block.NextEmptyBlockAddress != -1)
+                    {
+                        var nextBlock = GetBlockFromFile(block.NextEmptyBlockAddress);
+                        nextBlock.PreviousEmptyBlockAddress = block.PreviousEmptyBlockAddress;
+                        InsertBlockIntoFile(block.NextEmptyBlockAddress, nextBlock);
+                    }
+                }
+                else
+                {
+                    PartiallyEmptyBlockAddress = block.NextEmptyBlockAddress;
+                    if (PartiallyEmptyBlockAddress != -1)
+                    {
+                        var nextBlock = GetBlockFromFile(PartiallyEmptyBlockAddress);
+                        nextBlock.PreviousEmptyBlockAddress = -1;
+                        InsertBlockIntoFile(PartiallyEmptyBlockAddress, nextBlock);
+                    }
+                }
+
+                if (_file.Length == address + BlockSize - 1) // skratenie suboru ak zmazeme posledny blok
+                {
+                    BlocksCount--;
+
+                    var empty = true;
+                    while (empty)
+                    {
+                        var lastBlock = GetBlockFromFile(BlocksCount * BlockSize + GetFileHeaderSize());
+                        if (lastBlock.ValidCount == 0)
+                        {
+                            if (lastBlock.NextEmptyBlockAddress != -1)
+                            {
+                                var nextBlock = GetBlockFromFile(lastBlock.NextEmptyBlockAddress);
+                                nextBlock.PreviousEmptyBlockAddress = lastBlock.PreviousEmptyBlockAddress;
+                                InsertBlockIntoFile(lastBlock.NextEmptyBlockAddress, nextBlock);
+                            }
+
+                            if (lastBlock.PreviousEmptyBlockAddress != -1)
+                            {
+                                var prevBlock = GetBlockFromFile(lastBlock.PreviousEmptyBlockAddress);
+                                prevBlock.NextEmptyBlockAddress = lastBlock.NextEmptyBlockAddress;
+                                InsertBlockIntoFile(lastBlock.PreviousEmptyBlockAddress, prevBlock);
+                            }
+
+                            BlocksCount--;
+                        }
+                        else
+                        {
+                            empty = false;
+                        }
+                    }
+
+                    WriteFileHeader();
+                    _file.SetLength(BlocksCount * BlockSize + GetFileHeaderSize());
+                }
+
+                if (EmptyBlockAddress != -1)
+                {
+                    var emptyBlock = GetBlockFromFile(EmptyBlockAddress);
+                    emptyBlock.PreviousEmptyBlockAddress = address;
+                    InsertBlockIntoFile(EmptyBlockAddress, emptyBlock);
+                }
+
+                block.NextEmptyBlockAddress = EmptyBlockAddress;
+                EmptyBlockAddress = address;
+                WriteFileHeader();
+            }
+            else if ((block.TotalCount - block.ValidCount) == 1)
+            {
+                if (PartiallyEmptyBlockAddress != -1)
+                {
+                    var prevBlock = GetBlockFromFile(PartiallyEmptyBlockAddress);
+                    prevBlock.PreviousEmptyBlockAddress = address;
+                    InsertBlockIntoFile(PartiallyEmptyBlockAddress, prevBlock);
+                }
+
+                block.NextEmptyBlockAddress = PartiallyEmptyBlockAddress;
+                PartiallyEmptyBlockAddress = address;
+                WriteFileHeader();
+            }
+
+            InsertBlockIntoFile(address, block);
+        }
+
+        public T? Get(long address, T record)
+        {
+            var block = GetBlockFromFile(address);
+            return block.Get(record);
+        }
+
+        private Block<T> GetBlockFromFile(long address)
+        {
+            EnsureBlockSize();
+
+            _file.Seek(address, SeekOrigin.Begin);
+            byte[] blockData = new byte[BlockSize];
+            _file.Read(blockData, 0, BlockSize);
+
+            Block<T> block = new Block<T>(BlockFactor);
+            block.FromByteArray(blockData);
+
+            return block;
+        }
+
+        private void InsertBlockIntoFile(long address, Block<T> block)
+        {
+            EnsureBlockSize();
+
+            _file.Seek(address, SeekOrigin.Begin);
+            byte[] blockData = block.ToByteArray();
+            _file.Write(blockData, 0, BlockSize);
+            _file.Flush();
+        }
+
+        private void EnsureBlockSize()
+        {
+            if (BlockSize < 0)
+                BlockSize = Block<T>.GetEmptyBlock(BlockFactor).GetSize();
+        }
+
+        public void Dispose()
+        {
+            _file.Close();
+            _file.Dispose();
+        }
+
+        #region File Header
+        private void ReadFileHeader()
+        {
+            _file.Seek(0, SeekOrigin.Begin);
+            byte[] headerData = new byte[GetFileHeaderSize()];
+            _file.Read(headerData, 0, headerData.Length);
+
+            BlocksCount = BitConverter.ToInt32(headerData, 0);
+            BlockFactor = BitConverter.ToInt32(headerData, sizeof(int));
+            BlockSize = BitConverter.ToInt32(headerData, 2 * sizeof(int));
+            EmptyBlockAddress = BitConverter.ToInt64(headerData, 3 * sizeof(int));
+            PartiallyEmptyBlockAddress = BitConverter.ToInt64(headerData, 3 * sizeof(int) + sizeof(long));
+        }
+
+        private void WriteFileHeader()
+        {
+            byte[] headerData = new byte[GetFileHeaderSize()];
+
+            Buffer.BlockCopy(BitConverter.GetBytes(BlocksCount), 0, headerData, 0, sizeof(int));
+            Buffer.BlockCopy(BitConverter.GetBytes(BlockFactor), 0, headerData, sizeof(int), sizeof(int));
+            Buffer.BlockCopy(BitConverter.GetBytes(BlockSize), 0, headerData, 2 * sizeof(int), sizeof(int));
+            Buffer.BlockCopy(BitConverter.GetBytes(EmptyBlockAddress), 0, headerData, 3 * sizeof(int), sizeof(long));
+            Buffer.BlockCopy(BitConverter.GetBytes(PartiallyEmptyBlockAddress), 0, headerData, 3 * sizeof(int) + sizeof(long), sizeof(long));
+
+            _file.Seek(0, SeekOrigin.Begin);
+            _file.Write(headerData, 0, headerData.Length);
+            _file.Flush();
+        }
+
+        private int GetFileHeaderSize()
+        {
+            return (3 * sizeof(int)) + (2 * sizeof(long));
+        }
+        #endregion
+    }
+}
