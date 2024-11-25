@@ -12,10 +12,10 @@ namespace AAUS2_HeapFile.File
         private int BlockSize { get; set; } = -1;
         private FileStream _file;
 
-        public HeapFile(string fileName, int blockFactor)
+        public HeapFile(string fileName, int blockSize)
         {
             FileName = fileName;
-            BlockFactor = blockFactor;
+            BlockSize = blockSize;
 
             _file = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
@@ -28,14 +28,13 @@ namespace AAUS2_HeapFile.File
                 BlocksCount = 0;
                 EmptyBlockAddress = -1;
                 PartiallyEmptyBlockAddress = -1;
-
-                WriteFileHeader();
+                BlockFactor = Block<T>.GetBlockFactor(BlockSize);
             }
         }
 
         public long Insert(T record)
         {
-            Block<T> block = new(BlockFactor);
+            Block<T> block = new(BlockSize);
 
             var address = PartiallyEmptyBlockAddress;
             if (PartiallyEmptyBlockAddress == -1)
@@ -50,7 +49,6 @@ namespace AAUS2_HeapFile.File
                 block.NextEmptyBlockAddress = -1;
                 InsertBlockIntoFile(add, block);
                 PartiallyEmptyBlockAddress = add;
-                WriteFileHeader();
                 return add;
             }
 
@@ -67,7 +65,6 @@ namespace AAUS2_HeapFile.File
                     nextBlock.PreviousEmptyBlockAddress = -1;
                     InsertBlockIntoFile(PartiallyEmptyBlockAddress, nextBlock);
                 }
-                WriteFileHeader();
             }
             else if (block.ValidCount == 1)
             {
@@ -80,7 +77,6 @@ namespace AAUS2_HeapFile.File
                 }
 
                 PartiallyEmptyBlockAddress = address; // staci takto lebo ked budeme vkladat do prazdneho tak to znamena, ze ciastocne volny neni
-                WriteFileHeader();
             }
 
             InsertBlockIntoFile(address, block);
@@ -150,7 +146,6 @@ namespace AAUS2_HeapFile.File
                         }
                     }
 
-                    WriteFileHeader();
                     _file.SetLength(BlocksCount * BlockSize + GetFileHeaderSize());
                 }
 
@@ -163,7 +158,6 @@ namespace AAUS2_HeapFile.File
 
                 block.NextEmptyBlockAddress = EmptyBlockAddress;
                 EmptyBlockAddress = address;
-                WriteFileHeader();
             }
             else if (block.TotalCount - block.ValidCount == 1)
             {
@@ -176,7 +170,6 @@ namespace AAUS2_HeapFile.File
 
                 block.NextEmptyBlockAddress = PartiallyEmptyBlockAddress;
                 PartiallyEmptyBlockAddress = address;
-                WriteFileHeader();
             }
 
             InsertBlockIntoFile(address, block);
@@ -196,7 +189,7 @@ namespace AAUS2_HeapFile.File
             byte[] blockData = new byte[BlockSize];
             _file.Read(blockData, 0, BlockSize);
 
-            Block<T> block = new Block<T>(BlockFactor);
+            Block<T> block = new Block<T>(BlockSize);
             block.FromByteArray(blockData);
 
             return block;
@@ -220,6 +213,7 @@ namespace AAUS2_HeapFile.File
 
         public void Dispose()
         {
+            WriteFileHeader();
             _file.Close();
             _file.Dispose();
         }
@@ -231,22 +225,38 @@ namespace AAUS2_HeapFile.File
             byte[] headerData = new byte[GetFileHeaderSize()];
             _file.Read(headerData, 0, headerData.Length);
 
-            BlocksCount = BitConverter.ToInt32(headerData, 0);
-            BlockFactor = BitConverter.ToInt32(headerData, sizeof(int));
-            BlockSize = BitConverter.ToInt32(headerData, 2 * sizeof(int));
-            EmptyBlockAddress = BitConverter.ToInt64(headerData, 3 * sizeof(int));
-            PartiallyEmptyBlockAddress = BitConverter.ToInt64(headerData, 3 * sizeof(int) + sizeof(long));
+            int offset = 0;
+            BlocksCount = BitConverter.ToInt32(headerData, offset);
+            offset += sizeof(int);
+            BlockFactor = BitConverter.ToInt32(headerData, offset);
+            offset += sizeof(int);
+            BlockSize = BitConverter.ToInt32(headerData, offset);
+            offset += sizeof(int);
+            EmptyBlockAddress = BitConverter.ToInt64(headerData, offset);
+            offset += sizeof(long);
+            PartiallyEmptyBlockAddress = BitConverter.ToInt64(headerData, offset);
         }
 
         private void WriteFileHeader()
         {
             byte[] headerData = new byte[GetFileHeaderSize()];
 
-            Buffer.BlockCopy(BitConverter.GetBytes(BlocksCount), 0, headerData, 0, sizeof(int));
-            Buffer.BlockCopy(BitConverter.GetBytes(BlockFactor), 0, headerData, sizeof(int), sizeof(int));
-            Buffer.BlockCopy(BitConverter.GetBytes(BlockSize), 0, headerData, 2 * sizeof(int), sizeof(int));
-            Buffer.BlockCopy(BitConverter.GetBytes(EmptyBlockAddress), 0, headerData, 3 * sizeof(int), sizeof(long));
-            Buffer.BlockCopy(BitConverter.GetBytes(PartiallyEmptyBlockAddress), 0, headerData, 3 * sizeof(int) + sizeof(long), sizeof(long));
+            int offset = 0;
+            Buffer.BlockCopy(BitConverter.GetBytes(BlocksCount), 0, headerData, offset, sizeof(int));
+            offset += sizeof(int);
+            Buffer.BlockCopy(BitConverter.GetBytes(BlockFactor), 0, headerData, offset, sizeof(int));
+            offset += sizeof(int);
+            Buffer.BlockCopy(BitConverter.GetBytes(BlockSize), 0, headerData, offset, sizeof(int));
+            offset += sizeof(int);
+            Buffer.BlockCopy(BitConverter.GetBytes(EmptyBlockAddress), 0, headerData, offset, sizeof(long));
+            offset += sizeof(long);
+            Buffer.BlockCopy(BitConverter.GetBytes(PartiallyEmptyBlockAddress), 0, headerData, offset, sizeof(long));
+            offset += sizeof(long);
+
+            for (int i = offset; i < headerData.Length; i++)
+            {
+                headerData[i] = 0;
+            }
 
             _file.Seek(0, SeekOrigin.Begin);
             _file.Write(headerData, 0, headerData.Length);
@@ -255,7 +265,18 @@ namespace AAUS2_HeapFile.File
 
         private int GetFileHeaderSize()
         {
-            return 3 * sizeof(int) + 2 * sizeof(long);
+            var headerDataSize = 3 * sizeof(int) + 2 * sizeof(long);
+            var multiplier = 1;
+            var canFit = false;
+            while (!canFit)
+            {
+                canFit = headerDataSize < BlockSize * multiplier;
+
+                if (!canFit)
+                    multiplier++;
+            }
+
+            return multiplier * headerDataSize;
         }
         #endregion
     }

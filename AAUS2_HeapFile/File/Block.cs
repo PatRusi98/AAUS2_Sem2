@@ -1,4 +1,5 @@
 ﻿using AAUS2_HeapFile.Interfaces;
+using System.Data;
 
 namespace AAUS2_HeapFile.File
 {
@@ -8,17 +9,30 @@ namespace AAUS2_HeapFile.File
         public int TotalCount { get; private set; }
         public long NextEmptyBlockAddress { get; set; } = -1;
         public long PreviousEmptyBlockAddress { get; set; } = -1;
+        public int BlockSize { get; set; }
         public T[] Records { get; }
+        private static int HeaderSize { get; set; } = sizeof(int) + sizeof(long) * 2;
 
-        public Block(int blockFactor)
+        public Block(int blockSize)
         {
-            TotalCount = blockFactor;
+            HeaderSize = sizeof(int) + sizeof(long) * 2;
+            BlockSize = blockSize;
+            TotalCount = (blockSize - HeaderSize) / Activator.CreateInstance<T>().GetSize();
+            if (TotalCount == 0)
+            {
+                throw new Exception("Small block size!!!");
+            }
             Records = new T[TotalCount];
         }
 
         public static Block<T> GetEmptyBlock(int blockFactor)
         {
             return new Block<T>(blockFactor);
+        }
+
+        public static int GetBlockFactor(int blockSize)
+        {
+            return (blockSize - HeaderSize) / Activator.CreateInstance<T>().GetSize();
         }
 
         #region Overrides
@@ -79,13 +93,17 @@ namespace AAUS2_HeapFile.File
                 offset += recordBytes.Length;
             }
 
+            for (int i = offset; i < byteArr.Length; i++)
+            {
+                byteArr[i] = 0;
+            }
+
             return byteArr;
         }
 
         public int GetSize()
         {
-            var recordSize = Activator.CreateInstance<T>().GetSize();
-            return sizeof(int) + sizeof(long) * 2 + TotalCount * recordSize;
+            return BlockSize;
         }
         #endregion
 

@@ -22,8 +22,8 @@ namespace AAUS2_HeapFile.Tester
                     Name = Name(),
                     Surname = Surname(),
                     ID = _random.Next(1, 1000),
-                    LicencePlate = LicencePlate().ToString(),
-                    RecordsList = Records(_random.Next(1, 5))
+                    LicencePlate = LicencePlate().ToString()
+                    //RecordsList = Records(_random.Next(1, 5))
                 });
             }
 
