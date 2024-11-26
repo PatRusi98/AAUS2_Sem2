@@ -86,6 +86,7 @@ namespace AAUS2_HeapFile.File
         public void Delete(long address, T record)
         {
             var block = GetBlockFromFile(address);
+            var deletedLast = false;
             block.Remove(record);
 
             if (block.ValidCount == 0) // osetrenie zretazenia
@@ -114,13 +115,16 @@ namespace AAUS2_HeapFile.File
                     }
                 }
 
-                if (_file.Length == address + BlockSize - 1) // skratenie suboru ak zmazeme posledny blok
+                if (_file.Length == address + BlockSize) // skratenie suboru ak zmazeme posledny blok
                 {
                     BlocksCount--;
 
                     var empty = true;
                     while (empty)
                     {
+                        if (BlocksCount < 1)
+                            break;
+
                         var lastBlock = GetBlockFromFile(BlocksCount * BlockSize + GetFileHeaderSize());
                         if (lastBlock.ValidCount == 0)
                         {
@@ -146,6 +150,7 @@ namespace AAUS2_HeapFile.File
                         }
                     }
 
+                    deletedLast = true;
                     _file.SetLength(BlocksCount * BlockSize + GetFileHeaderSize());
                 }
 
@@ -156,8 +161,11 @@ namespace AAUS2_HeapFile.File
                     InsertBlockIntoFile(EmptyBlockAddress, emptyBlock);
                 }
 
-                block.NextEmptyBlockAddress = EmptyBlockAddress;
-                EmptyBlockAddress = address;
+                if (!deletedLast)
+                {
+                    block.NextEmptyBlockAddress = EmptyBlockAddress;
+                    EmptyBlockAddress = address;
+                }
             }
             else if (block.TotalCount - block.ValidCount == 1)
             {
@@ -172,7 +180,8 @@ namespace AAUS2_HeapFile.File
                 PartiallyEmptyBlockAddress = address;
             }
 
-            InsertBlockIntoFile(address, block);
+            if (!deletedLast)
+                InsertBlockIntoFile(address, block);
         }
 
         public T? Get(long address, T record)
@@ -276,7 +285,7 @@ namespace AAUS2_HeapFile.File
                     multiplier++;
             }
 
-            return multiplier * headerDataSize;
+            return multiplier * BlockSize;
         }
         #endregion
     }

@@ -10,12 +10,14 @@ namespace AAUS2_HeapFile.Tester
         private readonly Random _seedGen = new();
         private HeapFile<Person> HeapFile { get; set; }
         public Dictionary<Person, long> TestEntities { get; private set; } = new();
-        public Generator _generator = new();
+        public Generator _generator;
 
         public HeapFileTester(string filePath)
         {
             var seed = _seedGen.Next();
             _random = new Random(seed);
+            //_random = new Random(853474812);
+            _generator = new Generator(_random);
             Debug.WriteLine("Seed: " + seed);
 
             HeapFile = new HeapFile<Person>(filePath, 200);
@@ -58,8 +60,8 @@ namespace AAUS2_HeapFile.Tester
                 var entityToSearch = TestEntities.ElementAt(_random.Next(TestEntities.Count));
                 var found = HeapFile.Get(entityToSearch.Value, entityToSearch.Key);
 
-                Debug.WriteLine($"Searched: " + entityToSearch.Key.ToString());
-                Debug.WriteLine($"Found: " + found.ToString());
+                //Debug.WriteLine($"Searched: " + entityToSearch.Key.ToString());
+                //Debug.WriteLine($"Found: " + found.ToString());
             }
         }
 

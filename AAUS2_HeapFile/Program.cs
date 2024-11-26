@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using AAUS2_HeapFile.Tester;
+using System.Diagnostics;
 
 Console.WriteLine("Hello, World!");
 
@@ -187,7 +188,13 @@ Console.WriteLine("Hello, World!");
 
 //heapFile.Delete(1002, person19);
 //heapFile.Delete(1002, person20);
-HeapFileTester tester = new("data.bin");
-tester.CreateTestCase(1000, 50, 50, 30, 20);
+//HeapFileTester tester = new("data.bin");
+
+for (int i = 0; i < 1000; i++)
+{
+    Debug.WriteLine("Epoch: " + i);
+    HeapFileTester tester = new($"data{i}.bin");
+    tester.CreateTestCase(100000, 100, 70, 0, 30);
+}
 
 Console.WriteLine("tu brejkac");

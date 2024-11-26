@@ -4,9 +4,13 @@ namespace AAUS2_HeapFile.Tester
 {
     public class Generator
     {
-        private Random _random = new();
+        private Random _random;
+        private int _id = 0;
 
-        public Generator() { }
+        public Generator(Random random) 
+        {
+            _random = random;
+        }
 
         public List<Person> GenerateRecords(int count)
         {
@@ -21,10 +25,12 @@ namespace AAUS2_HeapFile.Tester
                 {
                     Name = Name(),
                     Surname = Surname(),
-                    ID = _random.Next(1, 1000),
+                    ID = _id,
                     LicencePlate = LicencePlate().ToString()
                     //RecordsList = Records(_random.Next(1, 5))
                 });
+
+                _id++;
             }
 
             return records;

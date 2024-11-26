@@ -1,9 +1,11 @@
-﻿using System.Text;
+﻿using System.Collections;
+using System.Text;
 using AAUS2_HeapFile.Interfaces;
+using static AAUS2_HeapFile.Helpers.Enums;
 
 namespace AAUS2_HeapFile.Entities
 {
-    public class Person : IRecord<Person>
+    public class Person : IHashFile<Person>
     {
         private const int _nameLength = 15;
         private const int _surnameLength = 20;
@@ -130,6 +132,35 @@ namespace AAUS2_HeapFile.Entities
         public int GetSize()
         {
             return _nameLength + _surnameLength + sizeof(int) + _licencePlateLength; //+ (_recordsCount * _recordSize)
+        }
+
+        public BitArray GetHash(HashProperty filter)
+        {
+            if (filter == HashProperty.ID)
+            {
+                return GetIDHash();
+            }
+            else if (filter == HashProperty.LicencePlate)
+            {
+                return GetLicencePlateHash();
+            }
+
+            throw new Exception("Invalid filter.");
+        }
+
+        private BitArray GetIDHash()
+        {
+            return new BitArray(BitConverter.GetBytes(ID));
+        }
+
+        private BitArray GetLicencePlateHash()
+        {
+            var hashValue = 0;
+            foreach (var item in _licencePlate)
+            {
+                hashValue += item;
+            }
+            return null;
         }
     }
 }
