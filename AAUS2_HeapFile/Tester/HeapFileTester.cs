@@ -8,8 +8,8 @@ namespace AAUS2_HeapFile.Tester
     {
         private readonly Random _random;
         private readonly Random _seedGen = new();
-        private HeapFile<Person> HeapFile { get; set; }
-        public Dictionary<Person, long> TestEntities { get; private set; } = new();
+        private HeapFile<Vehicle> HeapFile { get; set; }
+        public Dictionary<Vehicle, long> TestEntities { get; private set; } = new();
         public Generator _generator;
 
         public HeapFileTester(string filePath)
@@ -20,7 +20,7 @@ namespace AAUS2_HeapFile.Tester
             _generator = new Generator(_random);
             Debug.WriteLine("Seed: " + seed);
 
-            HeapFile = new HeapFile<Person>(filePath, 200);
+            HeapFile = new HeapFile<Vehicle>(filePath, 200);
         }
 
         public void TestInsert(int numberOfEntities, bool clearFile = false)

@@ -5,7 +5,7 @@ using static AAUS2_HeapFile.Helpers.Enums;
 
 namespace AAUS2_HeapFile.Entities
 {
-    public class Person : IHashFile<Person>
+    public class Vehicle : IHashFile<Vehicle>
     {
         private const int _nameLength = 15;
         private const int _surnameLength = 20;
@@ -83,19 +83,19 @@ namespace AAUS2_HeapFile.Entities
             }
         }
         public int ID { get; set; }
-        public ServiceRecord[] Records { get; set; } = new ServiceRecord[5];
-        public List<ServiceRecord> RecordsList { get; set; } = new();
+        //public ServiceRecord[] Records { get; set; } = new ServiceRecord[5];
+        public List<ServiceRecord> Records { get; set; } = new();
 
-        public Person()
+        public Vehicle()
         {
             _name = string.Empty.PadRight(_nameLength, '\0');
             _surname = string.Empty.PadRight(_surnameLength, '\0');
             _licencePlate = string.Empty.PadRight(_licencePlateLength, '\0');
         }
 
-        public Person CreateCopy()
+        public Vehicle CreateCopy()
         {
-            var person = new Person
+            var vehicle = new Vehicle
             {
                 Name = Name,
                 Surname = Surname,
@@ -103,15 +103,15 @@ namespace AAUS2_HeapFile.Entities
                 LicencePlate = LicencePlate
             };
 
-            for (int i = 0; i < Records.Length; i++)
+            foreach (var item in Records)
             {
-                person.Records[i] = Records[i].CreateCopy();
+                vehicle.Records.Add(item.CreateCopy());
             }
 
-            return person;
+            return vehicle;
         }
 
-        public bool Equals(Person? data)
+        public bool Equals(Vehicle? data)
         {
             if (data == null) return false;
 
@@ -123,29 +123,32 @@ namespace AAUS2_HeapFile.Entities
         {
             var index = 0;
 
-            Name = Encoding.UTF8.GetString(byteArray, index, _nameLength).TrimEnd();
+            NameValidLength = BitConverter.ToInt32(byteArray, index);
+            index += sizeof(int);
+            _name = Encoding.UTF8.GetString(byteArray, index, _nameLength);
             index += _nameLength;
-
-            Surname = Encoding.UTF8.GetString(byteArray, index, _surnameLength).TrimEnd();
+            SurnameValidLength = BitConverter.ToInt32(byteArray, index);
+            index += sizeof(int);
+            _surname = Encoding.UTF8.GetString(byteArray, index, _surnameLength);
             index += _surnameLength;
-
             ID = BitConverter.ToInt32(byteArray, index);
             index += sizeof(int);
-
-            LicencePlate = Encoding.UTF8.GetString(byteArray, index, _licencePlateLength).TrimEnd();
+            LicencePlateValidLength = BitConverter.ToInt32(byteArray, index);
+            index += sizeof(int);
+            _licencePlate = Encoding.UTF8.GetString(byteArray, index, _licencePlateLength);
             index += _licencePlateLength;
+            var recCount = BitConverter.ToInt32(byteArray, index);
+            index += sizeof(int);
 
-            //for (int i = 0; i < Records.Length; i++)
-            //{
-            //    var record = new ServiceRecord();
-            //    var recordSize = record.GetSize();
-            //    var recordBytes = byteArray.Skip(index).Take(recordSize).ToArray();
-            //    record.FromByteArray(recordBytes);
-            //    Records[i] = record;
-            //    index += recordSize;
-            //}
-
-            //RecordsList = Records.ToList();
+            for (int i = 0; i < recCount; i++)
+            {
+                var record = new ServiceRecord();
+                var recordSize = record.GetSize();
+                var recordBytes = byteArray[index..(index + recordSize)];
+                record.FromByteArray(recordBytes);
+                Records.Add(record);
+                index += recordSize;
+            }
         }
 
         public byte[] ToByteArray()
@@ -157,6 +160,24 @@ namespace AAUS2_HeapFile.Entities
             var idBytes = BitConverter.GetBytes(ID);
             var licencePlateValidBytes = BitConverter.GetBytes(LicencePlateValidLength);
             var licencePlateBytes = Encoding.UTF8.GetBytes(_licencePlate);
+            var recCountBytes = BitConverter.GetBytes(Records.Count);
+            var recLength = Activator.CreateInstance<ServiceRecord>().GetSize() * _recordsCount;
+            var recBytes = new byte[recLength];
+            var index = 0;
+
+            foreach (var record in Records)
+            {
+                var recordBytes = record.ToByteArray();
+                Buffer.BlockCopy(recordBytes, 0, recBytes, index, recordBytes.Length);
+                index += recordBytes.Length;
+            }
+
+            for (int i = Records.Count; i < _recordsCount; i++)
+            {
+                var recordBytes = new byte[Activator.CreateInstance<ServiceRecord>().GetSize()];
+                Buffer.BlockCopy(recordBytes, 0, recBytes, index, recordBytes.Length);
+                index += recordBytes.Length;
+            }
 
             var totalLength = nameValidBytes.Length + nameBytes.Length + surnameValidBytes.Length + surnameBytes.Length + idBytes.Length + licencePlateValidBytes.Length + licencePlateBytes.Length;
             var byteArr = new byte[totalLength];
@@ -182,6 +203,12 @@ namespace AAUS2_HeapFile.Entities
             offset += licencePlateValidBytes.Length;
 
             Buffer.BlockCopy(licencePlateBytes, 0, byteArr, offset, licencePlateBytes.Length);
+            offset += licencePlateBytes.Length;
+
+            Buffer.BlockCopy(recCountBytes, 0, byteArr, offset, recCountBytes.Length);
+            offset += recCountBytes.Length;
+
+            Buffer.BlockCopy(recBytes, 0, byteArr, offset, recBytes.Length);
 
             return byteArr;
         }

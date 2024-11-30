@@ -7,140 +7,140 @@ using static AAUS2_HeapFile.Helpers.Enums;
 
 Console.WriteLine("Hello, World!");
 
-Person person1 = new Person()
+Vehicle person1 = new Vehicle()
 {
     Name = "Patrik",
     Surname = "Rusinak",
     ID = 51,
     LicencePlate = "ZA375ET"
 };
-Person person2 = new Person()
+Vehicle person2 = new Vehicle()
 {
     Name = "Matej",
     Surname = "Rusinak",
     ID = 14,
     LicencePlate = "PR375ET"
 };
-Person person3 = new Person()
+Vehicle person3 = new Vehicle()
 {
     Name = "Jozo",
     Surname = "Gec",
     ID = 1,
     LicencePlate = "RV375ET"
 };
-Person person4 = new Person()
+Vehicle person4 = new Vehicle()
 {
     Name = "Jakub",
     Surname = "Dira",
     ID = 0,
     LicencePlate = "KKT12345"
 };
-Person person5 = new Person()
+Vehicle person5 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 44,
     LicencePlate = "SB375ET"
 };
-Person person6 = new Person()
+Vehicle person6 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 6,
     LicencePlate = "SB375ET"
 };
-Person person7 = new Person()
+Vehicle person7 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 7,
     LicencePlate = "SB375ET"
 };
-Person person8 = new Person()
+Vehicle person8 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 8,
     LicencePlate = "SB375ET"
 };
-Person person9 = new Person()
+Vehicle person9 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 9,
     LicencePlate = "SB375ET"
 };
-Person person10 = new Person()
+Vehicle person10 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 10,
     LicencePlate = "SB375ET"
 };
-Person person11 = new Person()
+Vehicle person11 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 11,
     LicencePlate = "SB375ET"
 };
-Person person12 = new Person()
+Vehicle person12 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 12,
     LicencePlate = "SB375ET"
 };
-Person person13 = new Person()
+Vehicle person13 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 13,
     LicencePlate = "SB375ET"
 };
-Person person14 = new Person()
+Vehicle person14 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 24,
     LicencePlate = "SB375ET"
 };
-Person person15 = new Person()
+Vehicle person15 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 15,
     LicencePlate = "SB375ET"
 };
-Person person16 = new Person()
+Vehicle person16 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 16,
     LicencePlate = "SB375ET"
 };
-Person person17 = new Person()
+Vehicle person17 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 17,
     LicencePlate = "SB375ET"
 };
-Person person18 = new Person()
+Vehicle person18 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 18,
     LicencePlate = "SB375ET"
 };
-Person person19 = new Person()
+Vehicle person19 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
     ID = 19,
     LicencePlate = "SB375ET"
 };
-Person person20 = new Person()
+Vehicle person20 = new Vehicle()
 {
     Name = "Laura",
     Surname = "Simcikova",
@@ -149,9 +149,9 @@ Person person20 = new Person()
 };
 
 
-//Dictionary<Person, long> addresses = new();
+//Dictionary<Vehicle, long> addresses = new();
 
-//HeapFile<Person> heapFile = new("data.bin", 3);
+//HeapFile<Vehicle> heapFile = new("data.bin", 3);
 //var add = heapFile.Insert(person1);
 //add = heapFile.Insert(person2);
 //add = heapFile.Insert(person3);
@@ -200,22 +200,22 @@ Person person20 = new Person()
 //    tester.CreateTestCase(100000, 100, 70, 0, 30);
 //}
 
-var heapFile = new HeapFile<Person>("data.bin", 500);
-var extHash = new ExtendibleHashing<PersonIDToHashFile>("hash_id.bin", "data.bin", 500);
+var heapFile = new HeapFile<Vehicle>("data.bin", 500);
+var extHash = new ExtendibleHashing<VehicleIDToHashFile>("hash_id.bin", "data.bin", 500);
 
 long add = 0;
 
 add = heapFile.Insert(person1);
 
-var p1 = new PersonIDToHashFile() { ID = person1.ID, Address = add };
+var p1 = new VehicleIDToHashFile() { ID = person1.ID, Address = add };
 extHash.Insert(p1, HashProperty.ID);
 
 add = heapFile.Insert(person2);
 
-var p2 = new PersonIDToHashFile() { ID = person2.ID, Address = add };
+var p2 = new VehicleIDToHashFile() { ID = person2.ID, Address = add };
 extHash.Insert(p2, HashProperty.ID);
 
-var s1 = new PersonIDToHashFile() { ID = person1.ID };
+var s1 = new VehicleIDToHashFile() { ID = person1.ID };
 var searched = extHash.Search(s1, HashProperty.ID);
 
 searched.Address = add;

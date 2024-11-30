@@ -4,12 +4,12 @@ using static AAUS2_HeapFile.Helpers.Enums;
 
 namespace AAUS2_HeapFile.Entities
 {
-    public class PersonIDToHashFile : IHashFile<PersonIDToHashFile>
+    public class VehicleIDToHashFile : IHashFile<VehicleIDToHashFile>
     {
         public int ID { get; set; }
         public long Address { get; set; }
 
-        public PersonIDToHashFile() 
+        public VehicleIDToHashFile() 
         {
             ID = -1;
             Address = -1;
@@ -21,15 +21,15 @@ namespace AAUS2_HeapFile.Entities
             return new BitArray(BitConverter.GetBytes(ID));
         }
 
-        public bool Equals(PersonIDToHashFile data)
+        public bool Equals(VehicleIDToHashFile data)
         {
             CheckIfNotNull();
             return ID == data.ID;
         }
 
-        public PersonIDToHashFile CreateCopy()
+        public VehicleIDToHashFile CreateCopy()
         {
-            return new PersonIDToHashFile()
+            return new VehicleIDToHashFile()
             {
                 ID = ID,
                 Address = Address

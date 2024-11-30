@@ -12,22 +12,22 @@ namespace AAUS2_HeapFile.Tester
             _random = random;
         }
 
-        public List<Person> GenerateRecords(int count)
+        public List<Vehicle> GenerateRecords(int count)
         {
             if (count < 1)
                 return new();
 
-            List<Person> records = new();
+            List<Vehicle> records = new();
 
             for (int i = 0; i < count; i++)
             {
-                records.Add(new Person
+                records.Add(new Vehicle
                 {
                     Name = Name(),
                     Surname = Surname(),
                     ID = _id,
                     LicencePlate = LicencePlate().ToString()
-                    //RecordsList = Records(_random.Next(1, 5))
+                    //Records = Records(_random.Next(1, 5))
                 });
 
                 _id++;
