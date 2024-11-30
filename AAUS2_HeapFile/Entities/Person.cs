@@ -16,26 +16,71 @@ namespace AAUS2_HeapFile.Entities
         private string _licencePlate;
         private int _recordSize;
 
+        public int NameValidLength;
         public string Name
         {
-            get => _name.PadRight(_nameLength, '\0');
-            set => _name = value.Length > _nameLength
-                ? value.Substring(0, _nameLength)
-                : value.PadRight(_nameLength, '\0');
+            get
+            {
+                return _name.Substring(0, NameValidLength);
+            }
+
+            set
+            {
+                if (value.Length > _nameLength)
+                {
+                    _name = value.Substring(0, _nameLength);
+                    NameValidLength = _nameLength;
+                }
+                else
+                {
+                    _name = value.PadRight(_nameLength, '\0');
+                    NameValidLength = value.Length;
+                }
+            }
         }
+        public int SurnameValidLength;
         public string Surname
         {
-            get => _surname.PadRight(_surnameLength, '\0');
-            set => _surname = value.Length > _surnameLength
-                ? value.Substring(0, _surnameLength)
-                : value.PadRight(_surnameLength, '\0');
+            get
+            {
+                return _surname.Substring(0, SurnameValidLength);
+            }
+
+            set
+            {
+                if (value.Length > _surnameLength)
+                {
+                    _surname = value.Substring(0, _surnameLength);
+                    SurnameValidLength = _surnameLength;
+                }
+                else
+                {
+                    _surname = value.PadRight(_surnameLength, '\0');
+                    SurnameValidLength = value.Length;
+                }
+            }
         }
+        public int LicencePlateValidLength;
         public string LicencePlate
         {
-            get => _licencePlate.PadRight(_licencePlateLength, '\0');
-            set => _licencePlate = value.Length > _licencePlateLength
-                ? value.Substring(0, _licencePlateLength)
-                : value.PadRight(_licencePlateLength, '\0');
+            get
+            {
+                return _licencePlate.Substring(0, LicencePlateValidLength);
+            }
+
+            set
+            {
+                if (value.Length > _licencePlateLength)
+                {
+                    _licencePlate = value.Substring(0, _licencePlateLength);
+                    LicencePlateValidLength = _licencePlateLength;
+                }
+                else
+                {
+                    _licencePlate = value.PadRight(_licencePlateLength, '\0');
+                    LicencePlateValidLength = value.Length;
+                }
+            }
         }
         public int ID { get; set; }
         public ServiceRecord[] Records { get; set; } = new ServiceRecord[5];
@@ -105,24 +150,36 @@ namespace AAUS2_HeapFile.Entities
 
         public byte[] ToByteArray()
         {
-            var nameBytes = Encoding.UTF8.GetBytes(Name);
-            var surnameBytes = Encoding.UTF8.GetBytes(Surname);
+            var nameValidBytes = BitConverter.GetBytes(NameValidLength);
+            var nameBytes = Encoding.UTF8.GetBytes(_name);
+            var surnameValidBytes = BitConverter.GetBytes(SurnameValidLength);
+            var surnameBytes = Encoding.UTF8.GetBytes(_surname);
             var idBytes = BitConverter.GetBytes(ID);
-            var licencePlateBytes = Encoding.UTF8.GetBytes(LicencePlate);
+            var licencePlateValidBytes = BitConverter.GetBytes(LicencePlateValidLength);
+            var licencePlateBytes = Encoding.UTF8.GetBytes(_licencePlate);
 
-            var totalLength = nameBytes.Length + surnameBytes.Length + idBytes.Length + licencePlateBytes.Length;
+            var totalLength = nameValidBytes.Length + nameBytes.Length + surnameValidBytes.Length + surnameBytes.Length + idBytes.Length + licencePlateValidBytes.Length + licencePlateBytes.Length;
             var byteArr = new byte[totalLength];
 
             int offset = 0;
 
+            Buffer.BlockCopy(nameValidBytes, 0, byteArr, offset, nameValidBytes.Length);
+            offset += nameValidBytes.Length;
+
             Buffer.BlockCopy(nameBytes, 0, byteArr, offset, nameBytes.Length);
             offset += nameBytes.Length;
+
+            Buffer.BlockCopy(surnameValidBytes, 0, byteArr, offset, surnameValidBytes.Length);
+            offset += surnameValidBytes.Length;
 
             Buffer.BlockCopy(surnameBytes, 0, byteArr, offset, surnameBytes.Length);
             offset += surnameBytes.Length;
 
             Buffer.BlockCopy(idBytes, 0, byteArr, offset, idBytes.Length);
             offset += idBytes.Length;
+
+            Buffer.BlockCopy(licencePlateValidBytes, 0, byteArr, offset, licencePlateValidBytes.Length);
+            offset += licencePlateValidBytes.Length;
 
             Buffer.BlockCopy(licencePlateBytes, 0, byteArr, offset, licencePlateBytes.Length);
 
@@ -131,7 +188,7 @@ namespace AAUS2_HeapFile.Entities
 
         public int GetSize()
         {
-            return _nameLength + _surnameLength + sizeof(int) + _licencePlateLength; //+ (_recordsCount * _recordSize)
+            return sizeof(int) + _nameLength + sizeof(int) + _surnameLength + sizeof(int) + sizeof(int) + _licencePlateLength; //+ (_recordsCount * _recordSize)
         }
 
         public BitArray GetHash(HashProperty filter)
@@ -155,12 +212,15 @@ namespace AAUS2_HeapFile.Entities
 
         private BitArray GetLicencePlateHash()
         {
-            var hashValue = 0;
-            foreach (var item in _licencePlate)
+            int[] weigths = { 2, 3, 5, 7, 11, 11, 7, 5, 3, 2 };
+            long hash = 0;
+
+            for (int i = 0; i < _licencePlateLength; i++)
             {
-                hashValue += item;
+                hash = (hash + (_licencePlate[i] * weigths[i])) % long.MaxValue;  // zabranenie longu pretiect
             }
-            return null;
+
+            return new BitArray(BitConverter.GetBytes(hash));
         }
     }
 }

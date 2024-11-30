@@ -30,6 +30,8 @@ namespace AAUS2_HeapFile.File
                 PartiallyEmptyBlockAddress = -1;
                 BlockFactor = Block<T>.GetBlockFactor(BlockSize);
             }
+
+            WriteFileHeader();
         }
 
         public long Insert(T record)

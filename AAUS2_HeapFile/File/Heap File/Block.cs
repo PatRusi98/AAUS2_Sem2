@@ -9,6 +9,7 @@ namespace AAUS2_HeapFile.File
         public long NextEmptyBlockAddress { get; set; } = -1;
         public long PreviousEmptyBlockAddress { get; set; } = -1;
         public int BlockSize { get; set; }
+        public int LocalDepth { get; set; } = 0;
         public T[] Records { get; }
         private static int HeaderSize { get; set; } = sizeof(int) + sizeof(long) * 2;
 
@@ -117,6 +118,18 @@ namespace AAUS2_HeapFile.File
             }
 
             return default;
+        }
+
+        public List<T>? GetAll()
+        {
+            var result = new List<T>();
+
+            for (int i = 0; i < ValidCount; i++)
+            {
+                result.Add(Records[i]);
+            }
+
+            return result;
         }
 
         public void Insert(T record)
