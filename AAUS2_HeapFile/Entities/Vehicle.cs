@@ -7,6 +7,7 @@ namespace AAUS2_HeapFile.Entities
 {
     public class Vehicle : IHashFile<Vehicle>
     {
+        private static int LastId = 0;
         private const int _nameLength = 15;
         private const int _surnameLength = 20;
         private const int _licencePlateLength = 10;
@@ -82,12 +83,12 @@ namespace AAUS2_HeapFile.Entities
                 }
             }
         }
-        public int ID { get; set; }
-        //public ServiceRecord[] Records { get; set; } = new ServiceRecord[5];
+        public int ID { get; private set; }
         public List<ServiceRecord> Records { get; set; } = new();
 
         public Vehicle()
         {
+            ID = generateId();
             _name = string.Empty.PadRight(_nameLength, '\0');
             _surname = string.Empty.PadRight(_surnameLength, '\0');
             _licencePlate = string.Empty.PadRight(_licencePlateLength, '\0');
@@ -248,6 +249,11 @@ namespace AAUS2_HeapFile.Entities
             }
 
             return new BitArray(BitConverter.GetBytes(hash));
+        }
+
+        private static int generateId()                      // stack overflow kod: https://stackoverflow.com/questions/51641722/create-a-c-sharp-method-to-generate-auto-increment-id
+        {
+            return Interlocked.Increment(ref LastId);
         }
     }
 }
