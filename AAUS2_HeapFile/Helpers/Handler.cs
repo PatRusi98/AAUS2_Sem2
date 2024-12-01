@@ -1,6 +1,7 @@
 ﻿using AAUS2_HeapFile.Entities;
 using AAUS2_HeapFile.File;
 using AAUS2_HeapFile.Tester;
+using static AAUS2_HeapFile.Helpers.Enums;
 
 namespace AAUS2_HeapFile.Helpers
 {
@@ -33,14 +34,14 @@ namespace AAUS2_HeapFile.Helpers
             }
         }
 
-        public void InsertVehicle(Vehicle veh)
+        public void InsertVehicle(Vehicle veh, ServiceRecord sr = null)
         {
             var address = Data.Insert(veh);
             var id = new VehicleIDToHashFile() { ID = veh.ID, Address = address };
             var lp = new LicencePlateToHashFile() { LicencePlate = veh.LicencePlate, Address = address };
         }
 
-        public Vehicle SearchVehicle()
+        public Vehicle SearchVehicle(HashProperty searchBy, object value)
         {
             throw new NotImplementedException();
         }
@@ -67,6 +68,16 @@ namespace AAUS2_HeapFile.Helpers
             Data.Dispose();
             IDAddresses.Dispose();
             LPAddresses.Dispose();
+        }
+
+        public void EditServiceRecord(ServiceRecord serviceRecordToEdit, ServiceRecordParams par)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void InsertServiceRecord(Vehicle veh, ServiceRecord sr)
+        {
+            throw new NotImplementedException();
         }
     }
 }
