@@ -1,4 +1,5 @@
 ﻿using AAUS2_HeapFile.Interfaces;
+using System.Text;
 
 namespace AAUS2_HeapFile.File
 {
@@ -155,6 +156,23 @@ namespace AAUS2_HeapFile.File
             }
 
             throw new Exception("Record not found");
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"ValidCount: {ValidCount}");
+            sb.AppendLine($"TotalCount: {TotalCount}");
+            sb.AppendLine($"BlockSize: {BlockSize}");
+            sb.AppendLine($"LocalDepth: {LocalDepth}");
+            sb.AppendLine("Records:");
+
+            foreach (var record in Records)
+            {
+                sb.AppendLine(record?.ToString() ?? "null");
+            }
+
+            return sb.ToString();
         }
     }
 }

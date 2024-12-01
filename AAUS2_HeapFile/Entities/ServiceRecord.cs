@@ -157,5 +157,10 @@ namespace AAUS2_HeapFile.Entities
 
             return result;
         }
+
+        public override string ToString()
+        {
+            return $"Date: {Date}, Price: {Price}, Description: {Description}";
+        }
     }
 }

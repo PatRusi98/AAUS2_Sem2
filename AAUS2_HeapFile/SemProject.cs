@@ -41,6 +41,7 @@ namespace AAUS2_HeapFile
         {
             var veh = new Vehicle()
             {
+                ID = Vehicle.GenerateId(),
                 Name = name,
                 Surname = surname,
                 LicencePlate = licencePlate
@@ -67,14 +68,16 @@ namespace AAUS2_HeapFile
             Handler.InsertServiceRecord(veh, sr);
         }
 
-        public void EditVehicle(Vehicle vehicleToEdit, VehicleParams par)
+        public void EditVehicle(Vehicle vehicleToEdit, string name, string surname)
         {
+            var par = new VehicleParams() { Name = name, Surname = surname };
             Handler.EditVehicle(vehicleToEdit, par);
         }
         
-        public void EditServiceRecord(ServiceRecord serviceRecordToEdit, ServiceRecordParams par)
+        public void EditServiceRecord(ServiceRecord serviceRecordToEdit, DateTime date, double price, string description)
         {
-            Handler.EditServiceRecord(serviceRecordToEdit, par);
+            var par = new ServiceRecordParams() { Date = date, Price = price, Description = description };
+            //Handler.EditServiceRecord(serviceRecordToEdit, par);
         }
 
         public void GenerateRandomVehicles(int number)

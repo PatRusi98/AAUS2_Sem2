@@ -1,4 +1,5 @@
 ﻿using AAUS2_HeapFile.Interfaces;
+using System.Diagnostics;
 
 namespace AAUS2_HeapFile.File
 {
@@ -106,6 +107,22 @@ namespace AAUS2_HeapFile.File
         public long GetFileLength()
         {
             return _file.Length;
+        }
+
+        public List<T> GetAllSequential(bool consolePrint = false)
+        {
+            List<T> records = new();
+            for (int i = 0; i < BlocksCount; i++)
+            {
+                var block = GetBlockFromFile(i * BlockSize);
+
+                if (consolePrint)
+                    Debug.WriteLine(block.ToString());
+
+                records.AddRange(block.GetAll());
+            }
+
+            return records;
         }
     }
 }

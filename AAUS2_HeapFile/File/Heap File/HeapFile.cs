@@ -1,4 +1,6 @@
-﻿using AAUS2_HeapFile.Interfaces;
+﻿using AAUS2_HeapFile.Entities;
+using AAUS2_HeapFile.Interfaces;
+using System.Diagnostics;
 
 namespace AAUS2_HeapFile.File
 {
@@ -220,6 +222,38 @@ namespace AAUS2_HeapFile.File
         {
             if (BlockSize < 0)
                 BlockSize = Block<T>.GetEmptyBlock(BlockFactor).GetSize();
+        }
+
+        public List<T> GetAllSequential(bool consolePrint = false)
+        {
+            List<T> records = new();
+            for (int i = 0; i < BlocksCount; i++)
+            {
+                var block = GetBlockFromFile(i * BlockSize + GetFileHeaderSize());
+
+                if (consolePrint)
+                    Debug.WriteLine(block.ToString());
+
+                records.AddRange(block.GetAll());
+            }
+
+            return records;
+        }
+
+        public void Update(T obj, long address)
+        {
+            var block = GetBlockFromFile(address);
+
+            for (int i = 0; i < block.Records.Length; i++)
+            {
+                if (block.Records[i] != null && block.Records[i].Equals(obj))
+                {
+                    block.Records[i] = obj;
+                    break;
+                }
+            }
+
+            InsertBlockIntoFile(address, block);
         }
 
         public void Dispose()

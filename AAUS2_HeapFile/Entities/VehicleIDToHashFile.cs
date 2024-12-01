@@ -70,5 +70,10 @@ namespace AAUS2_HeapFile.Entities
             }
 
         }
+
+        public string ToString()
+        {
+            return $"ID: {ID}, Address: {Address}";
+        }
     }
 }

@@ -62,7 +62,7 @@ namespace AAUS2_HeapFile.Entities
 
         public BitArray GetHash(HashProperty filter)
         {
-            int[] weigths = { 2, 3, 5, 7, 11, 11, 7, 5, 3, 2 };
+            int[] weigths = { 11, 13, 17, 19, 23, 23, 19, 17, 13, 11 };
             long hash = 0;
 
             for (int i = 0; i < _licencePlateLength; i++)
@@ -71,38 +71,7 @@ namespace AAUS2_HeapFile.Entities
             }
 
             return new BitArray(BitConverter.GetBytes(hash));
-
-            //// Veľké prvočísla pre váhy
-            //int[] weights = { 257, 263, 269, 271, 277, 281, 283, 293, 307, 311 };
-
-            //ulong hash = 0;
-
-            //for (int i = 0; i < _licencePlateLength; i++)
-            //{
-            //    // Rotácia bitov namiesto jednoduchého posunu
-            //    ulong rotated = RotateLeft((ulong)_licencePlate[i] * (ulong)weights[i % weights.Length], i % 32);
-
-            //    // Kombinácia aktuálneho hashu so spracovaným znakom
-            //    hash ^= rotated;
-
-            //    // Modulárne delenie a premiešavanie
-            //    hash = (hash * 6364136223846793005L + 1442695040888963407L) % 1000000007;
-            //}
-
-            //// Záverečné miešanie pre lepšiu distribúciu
-            //hash ^= (hash >> 33);
-            //hash ^= (hash >> 17);
-            //hash ^= (hash >> 7);
-
-            //// Konvertujeme na BitArray
-            //return new BitArray(BitConverter.GetBytes(hash));
         }
-
-        //// Pomocná funkcia pre rotáciu bitov doľava
-        //private static ulong RotateLeft(ulong value, int count)
-        //{
-        //    return (value << count) | (value >> (64 - count));
-        //}
 
         public int GetSize()
         {
@@ -127,6 +96,11 @@ namespace AAUS2_HeapFile.Entities
             Buffer.BlockCopy(addressBytes, 0, byteArr, offset, addressBytes.Length);
 
             return byteArr;
+        }
+
+        public string ToString()
+        {
+            return $"Licence plate: {LicencePlate}, Address: {Address}";
         }
     }
 }

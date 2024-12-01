@@ -38,6 +38,7 @@ namespace AAUS2_HeapFile.Tester
             {
                 records.Add(new Vehicle
                 {
+                    ID = Vehicle.GenerateId(),
                     Name = Name(),
                     Surname = Surname(),
                     LicencePlate = LicencePlate().ToString(),

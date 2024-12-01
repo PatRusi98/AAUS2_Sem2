@@ -12,10 +12,12 @@ namespace AAUS2_SemPraca
         public Form1()
         {
             InitializeComponent();
+            _project = SemProject.Instance;
         }
 
         private void Exit_Click(object sender, EventArgs e)
         {
+            _project.Dispose();
             Application.Exit();
         }
 
@@ -46,7 +48,7 @@ namespace AAUS2_SemPraca
                     var insertProb = testerForm.InsertProbability;
                     var searchProb = testerForm.SearchProbability;
 
-
+                    _project.Test(numberOfOperations, insertProb, searchProb);
                 }
             }
         }
@@ -114,8 +116,7 @@ namespace AAUS2_SemPraca
                         selectedRow.Cells["IDColumn"].Value = id;
                         selectedRow.Cells["LicencePlateColumn"].Value = licencePlate;
 
-                        //_project.EditVehicle();
-
+                        _project.EditVehicle(vehicle, name, surname);
                     }
                 }
             }
@@ -123,7 +124,14 @@ namespace AAUS2_SemPraca
 
         private void generateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            using (var generatorForm = new GeneratorForm())
+            {
+                if (generatorForm.ShowDialog() == DialogResult.OK)
+                {
+                    var numberOfVehicles = generatorForm.NumberOfObjects;
+                    _project.GenerateRandomVehicles(numberOfVehicles);
+                }
+            }
         }
     }
 }

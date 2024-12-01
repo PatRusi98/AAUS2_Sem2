@@ -1,4 +1,5 @@
 ﻿using AAUS2_HeapFile.Interfaces;
+using System.Text;
 
 namespace AAUS2_HeapFile.File
 {
@@ -9,7 +10,6 @@ namespace AAUS2_HeapFile.File
         public long NextEmptyBlockAddress { get; set; } = -1;
         public long PreviousEmptyBlockAddress { get; set; } = -1;
         public int BlockSize { get; set; }
-        public int LocalDepth { get; set; } = 0;
         public T[] Records { get; }
         private static int HeaderSize { get; set; } = sizeof(int) + sizeof(long) * 2;
 
@@ -163,6 +163,24 @@ namespace AAUS2_HeapFile.File
             }
 
             throw new Exception("Record not found");
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"ValidCount: {ValidCount}");
+            sb.AppendLine($"TotalCount: {TotalCount}");
+            sb.AppendLine($"NextEmptyBlockAddress: {NextEmptyBlockAddress}");
+            sb.AppendLine($"PreviousEmptyBlockAddress: {PreviousEmptyBlockAddress}");
+            sb.AppendLine($"BlockSize: {BlockSize}");
+            sb.AppendLine("Records:");
+
+            foreach (var record in Records)
+            {
+                sb.AppendLine(record?.ToString() ?? "null");
+            }
+
+            return sb.ToString();
         }
     }
 }

@@ -83,12 +83,12 @@ namespace AAUS2_HeapFile.Entities
                 }
             }
         }
-        public int ID { get; private set; }
+        public int ID { get; set; }
         public List<ServiceRecord> Records { get; set; } = new();
 
         public Vehicle()
         {
-            ID = generateId();
+            //ID = GenerateId();
             _name = string.Empty.PadRight(_nameLength, '\0');
             _surname = string.Empty.PadRight(_surnameLength, '\0');
             _licencePlate = string.Empty.PadRight(_licencePlateLength, '\0');
@@ -233,6 +233,17 @@ namespace AAUS2_HeapFile.Entities
             throw new Exception("Invalid filter.");
         }
 
+        public string ToString()
+        {
+            var str = $"ID: {ID}, Name: {Name}, Surname: {Surname}, Licence Plate: {LicencePlate}";
+            foreach (var record in Records)
+            {
+                str += $"\n{record.ToString()}";
+            }
+
+            return str;
+        }
+
         private BitArray GetIDHash()
         {
             return new BitArray(BitConverter.GetBytes(ID));
@@ -251,7 +262,7 @@ namespace AAUS2_HeapFile.Entities
             return new BitArray(BitConverter.GetBytes(hash));
         }
 
-        private static int generateId()                      // stack overflow kod: https://stackoverflow.com/questions/51641722/create-a-c-sharp-method-to-generate-auto-increment-id
+        public static int GenerateId()                      // stack overflow kod: https://stackoverflow.com/questions/51641722/create-a-c-sharp-method-to-generate-auto-increment-id
         {
             return Interlocked.Increment(ref LastId);
         }
