@@ -1,68 +1,56 @@
 ﻿using AAUS2_HeapFile.Entities;
 using AAUS2_HeapFile.File;
 using System.Diagnostics;
+using static AAUS2_HeapFile.Helpers.Enums;
 
 namespace AAUS2_HeapFile.Tester
 {
-    public class HeapFileTester
+    public class SemTester
     {
         private readonly Random _random;
         private readonly Random _seedGen = new();
         private HeapFile<Vehicle> HeapFile { get; set; }
-        public Dictionary<Vehicle, long> TestEntities { get; private set; } = new();
-        public Generator _generator;
+        private ExtendibleHashing<VehicleIDToHashFile> IDAddresses { get; set; }
+        private ExtendibleHashing<LicencePlateToHashFile> LicencePlateAddresses { get; set; }
+        private Generator _generator;
 
-        public HeapFileTester(string filePath)
+        public SemTester()
         {
             var seed = _seedGen.Next();
-            _random = new Random(seed);
-            //Random = new Random(853474812);
+            //Random = new Random(seed);
+            _random = new Random(1590771754);
             _generator = Generator.Instance;
             _generator.Random = _random;
             Debug.WriteLine("Seed: " + seed);
 
-            HeapFile = new HeapFile<Vehicle>(filePath, 200);
+            HeapFile = new HeapFile<Vehicle>("data_" + seed + ".dat", 5000);
+            IDAddresses = new ExtendibleHashing<VehicleIDToHashFile>("id_" + seed + ".dat", 70);
+            LicencePlateAddresses = new ExtendibleHashing<LicencePlateToHashFile>("licencePlate_" + seed + ".dat", 70);
         }
 
         public void TestInsert(int numberOfEntities, bool clearFile = false)
         {
             for (int i = 0; i < numberOfEntities; i++)
             {
-                var person = _generator.GenerateRecords(numberOfEntities);
+                Debug.WriteLine("Iteracia: " + i);
+                var person = _generator.GenerateRecords(1);
 
                 foreach (var record in person)
                 {
                     var address = HeapFile.Insert(record);
-                    TestEntities[record] = address;
+                    var id = new VehicleIDToHashFile() { ID = record.ID, Address = address };
+                    var licencePlate = new LicencePlateToHashFile() { LicencePlate = record.LicencePlate, Address = address };
+                    IDAddresses.Insert(id, HashProperty.ID);
+                    //LicencePlateAddresses.Insert(licencePlate, HashProperty.LicencePlate);
                 }
-            }
-        }
-
-        public void TestDelete(int numberOfIterations = 1)
-        {
-            if (TestEntities.Count == 0)
-                return;
-
-            for (int i = 0; i < numberOfIterations; i++)
-            {
-                var entityToDelete = TestEntities.ElementAt(_random.Next(TestEntities.Count));
-                HeapFile.Delete(entityToDelete.Value, entityToDelete.Key);
-                TestEntities.Remove(entityToDelete.Key);
             }
         }
 
         public void TestSearch(int numberOfIterations = 1)
         {
-            if (TestEntities.Count == 0)
-                return;
-
             for (int i = 0; i < numberOfIterations; i++)
             {
-                var entityToSearch = TestEntities.ElementAt(_random.Next(TestEntities.Count));
-                var found = HeapFile.Get(entityToSearch.Value, entityToSearch.Key);
 
-                //Debug.WriteLine($"Searched: " + entityToSearch.Key.ToString());
-                //Debug.WriteLine($"Found: " + found.ToString());
             }
         }
 
@@ -70,20 +58,17 @@ namespace AAUS2_HeapFile.Tester
             int numberOfIterations,
             int numberOfItemsToStart,
             double insertProb,
-            double searchProb,
-            double deleteProb)
+            double searchProb)
         {
-            TestEntities = new();
 
             for (int i = 0; i < numberOfItemsToStart; i++)
             {
                 TestInsert(1);
             }
 
-            var totalProb = insertProb + searchProb + deleteProb;
+            var totalProb = insertProb + searchProb;
             insertProb /= totalProb;
             searchProb /= totalProb;
-            deleteProb /= totalProb;
 
             for (int i = 0; i < numberOfIterations; i++)
             {
@@ -95,19 +80,16 @@ namespace AAUS2_HeapFile.Tester
                     TestInsert(1);
                     op = "Insert";
                 }
-                else if (operation < insertProb + searchProb)
+                else
                 {
                     TestSearch(1);
                     op = "Search";
                 }
-                else
-                {
-                    TestDelete(1);
-                    op = "Delete";
-                }
             }
 
             HeapFile.Dispose();
+            IDAddresses.Dispose();
+            LicencePlateAddresses.Dispose();
         }
     }
 }

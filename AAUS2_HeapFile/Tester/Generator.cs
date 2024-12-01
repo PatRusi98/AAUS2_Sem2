@@ -4,12 +4,27 @@ namespace AAUS2_HeapFile.Tester
 {
     public class Generator
     {
-        private Random _random;
+        private static Generator? _instance = null;
+        public Random Random { get; set; }
         private int _id = 0;
+        private List<string> UsedLPs { get; set; } = new();
 
-        public Generator(Random random) 
+        private Generator() 
         {
-            _random = random;
+
+        }
+
+        public static Generator Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new();
+                }
+
+                return _instance;
+            }
         }
 
         public List<Vehicle> GenerateRecords(int count)
@@ -25,12 +40,9 @@ namespace AAUS2_HeapFile.Tester
                 {
                     Name = Name(),
                     Surname = Surname(),
-                    ID = _id,
-                    LicencePlate = LicencePlate().ToString()
-                    //Records = Records(_random.Next(1, 5))
+                    LicencePlate = LicencePlate().ToString(),
+                    Records = Records(Random.Next(1, 5))
                 });
-
-                _id++;
             }
 
             return records;
@@ -40,24 +52,46 @@ namespace AAUS2_HeapFile.Tester
         {
             string[] names = { "John", "Jane", "Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Isabella",
                 "Jack", "Kate", "Liam", "Mia", "Noah", "Olivia", "Peter", "Quinn", "Rose" };
-            return names[_random.Next(names.Length)];
+            return names[Random.Next(names.Length)];
         }
 
         private string Surname()
         {
             string[] surnames = { "Doe", "Smith", "Johnson", "Brown", "Wilson", "Moore", "Taylor", "Anderson", "Thomas", "Jackson",
                 "Harris", "Clark", "Lewis", "Young", "Walker", "Hall", "Allen", "King", "Baker", "Wright" };
-            return surnames[_random.Next(surnames.Length)];
+            return surnames[Random.Next(surnames.Length)];
         }
 
-        private char[] LicencePlate()
+        private string LicencePlate()
         {
-            char[] licencePlate = new char[10];
-            for (int i = 0; i < licencePlate.Length; i++)
+            string licencePlate = "";
+
+            int characters = Random.Next(5, 11);
+
+            for (int j = 0; j < characters; j++)
             {
-                licencePlate[i] = (char)_random.Next(65, 90);
+                var number = Random.NextDouble();
+
+                if (number > 0.5)
+                {
+                    licencePlate += Random.Next(0, 10).ToString();
+                }
+                else
+                {
+                    char randomChar = (char)Random.Next(65, 91);
+                    licencePlate += randomChar;
+                }
             }
-            return licencePlate;
+
+            if (UsedLPs.Contains(licencePlate))
+            {
+                return LicencePlate();
+            }
+            else
+            {
+                UsedLPs.Add(licencePlate);
+                return licencePlate;
+            }
         }
 
         private List<ServiceRecord> Records(int count)
@@ -70,32 +104,44 @@ namespace AAUS2_HeapFile.Tester
                 {
                     Date = Date(),
                     Price = Price(),
-                    //Description = Description()
+                    Description = Description()
                 });
             }
             return records;
         }
 
-        private char[] Description()
+        private string Description()
         {
-            char[] description = new char[20];
-            for (int i = 0; i < description.Length; i++)
+            int wordCount = Random.Next(1, 11);
+            string description = "";
+
+            for (int i = 0; i < wordCount; i++)
             {
-                description[i] = (char)_random.Next(65, 90);
+                int wordLength = Random.Next(1, 21);
+                string word = "";
+
+                for (int j = 0; j < wordLength; j++)
+                {
+                    char randomChar = (char)Random.Next(65, 91);
+                    word += randomChar;
+                }
+
+                description += word + " ";
             }
-            return description;
+
+            return description.Trim();
         }
 
         private DateTime Date()
         {
             DateTime start = new(2010, 1, 1);
             int range = (DateTime.Today - start).Days;
-            return start.AddDays(_random.Next(range));
+            return start.AddDays(Random.Next(range));
         }
 
         private double Price()
         {
-            return Math.Round(_random.NextDouble() * 1000, 2);
+            return Math.Round(Random.NextDouble() * 1000, 2);
         }
     }
 }

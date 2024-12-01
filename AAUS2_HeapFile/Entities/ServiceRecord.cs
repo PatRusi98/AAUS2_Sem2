@@ -115,7 +115,7 @@ namespace AAUS2_HeapFile.Entities
         {
             int dateSize = sizeof(long);
             int priceSize = sizeof(double);
-            int descriptionSize = _descriptionWordLength * _descriptionWordsCount;
+            int descriptionSize = 2 * _descriptionWordLength * _descriptionWordsCount;
             int wordsLengthSize = sizeof(int) * _descriptionWordsCount;
 
             return dateSize + priceSize + descriptionSize + wordsLengthSize;
@@ -129,9 +129,11 @@ namespace AAUS2_HeapFile.Entities
             var descLength = (2 * _descriptionWordLength * _descriptionWordsCount) + (sizeof(int) * _descriptionWordsCount);
             var descBytes = new byte[descLength];
             int index = 0;
+            int counter = 0;
+
             foreach (var word in _description)
             {
-                var wordLengthBytes = BitConverter.GetBytes(_wordLengths[index]);
+                var wordLengthBytes = BitConverter.GetBytes(_wordLengths[counter]);
                 var wordBytes = Encoding.UTF8.GetBytes(word);
 
                 Buffer.BlockCopy(wordLengthBytes, 0, descBytes, index, wordLengthBytes.Length);
@@ -139,6 +141,7 @@ namespace AAUS2_HeapFile.Entities
 
                 Buffer.BlockCopy(wordBytes, 0, descBytes, index, wordBytes.Length);
                 index += wordBytes.Length;
+                counter++;
             }
 
             var result = new byte[dateBytes.Length + priceBytes.Length + descBytes.Length];

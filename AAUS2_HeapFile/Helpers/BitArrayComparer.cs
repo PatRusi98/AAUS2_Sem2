@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 
 namespace AAUS2_HeapFile.Helpers
 {
@@ -6,12 +7,15 @@ namespace AAUS2_HeapFile.Helpers
     {
         public bool Equals(BitArray a, BitArray b)
         {
-            return a.ToBitString() == b.ToBitString();
+            var result = a.ToBitString() == b.ToBitString();
+            //Debug.WriteLine("Result: " + result + " A: " + a.ToBitString() + " B: " + b.ToBitString());
+            return result;
         }
 
         public int GetHashCode(BitArray o)
         {
-            return o.ToBitString().GetHashCode();
+            var hashCode = o.ToBitString().GetHashCode();
+            return hashCode;
         }
     }
 }

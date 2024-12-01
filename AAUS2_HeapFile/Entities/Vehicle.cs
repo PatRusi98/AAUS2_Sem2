@@ -180,7 +180,7 @@ namespace AAUS2_HeapFile.Entities
                 index += recordBytes.Length;
             }
 
-            var totalLength = nameValidBytes.Length + nameBytes.Length + surnameValidBytes.Length + surnameBytes.Length + idBytes.Length + licencePlateValidBytes.Length + licencePlateBytes.Length;
+            var totalLength = nameValidBytes.Length + nameBytes.Length + surnameValidBytes.Length + surnameBytes.Length + idBytes.Length + licencePlateValidBytes.Length + licencePlateBytes.Length + recCountBytes.Length + recBytes.Length;
             var byteArr = new byte[totalLength];
 
             int offset = 0;
@@ -216,7 +216,7 @@ namespace AAUS2_HeapFile.Entities
 
         public int GetSize()
         {
-            return sizeof(int) + _nameLength + sizeof(int) + _surnameLength + sizeof(int) + sizeof(int) + _licencePlateLength; //+ (_recordsCount * _recordSize)
+            return (5 * sizeof(int)) + _nameLength + _surnameLength + _licencePlateLength + (Activator.CreateInstance<ServiceRecord>().GetSize() * _recordsCount);
         }
 
         public BitArray GetHash(HashProperty filter)

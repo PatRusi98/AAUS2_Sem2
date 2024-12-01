@@ -13,7 +13,7 @@ namespace AAUS2_HeapFile.File
         private int GlobalDepth { get; set; }
         private HashProperty Prop { get; set; } = HashProperty.None;
 
-        public ExtendibleHashing(string hashFileName, string dataFile, int blockSize)
+        public ExtendibleHashing(string hashFileName, int blockSize)
         {
             BlockSize = blockSize;
             GlobalDepth = 1;
@@ -45,10 +45,24 @@ namespace AAUS2_HeapFile.File
                 if (GlobalDepth == block.LocalDepth)
                 {
                     DoubleDirectory();
-                    address = GetHashAddress(hash);
+                    //address = GetHashAddress(hash);
                 }
 
                 (block, var newBlock) = SplitBlock(block);
+
+                while (block.IsFull() || newBlock.IsFull())
+                {
+                    if (GlobalDepth == block.LocalDepth)
+                    {
+                        DoubleDirectory();
+                    }
+
+                    if (block.IsFull())
+                        (block, newBlock) = SplitBlock(block);
+                    else if (newBlock.IsFull())
+                        (newBlock, block) = SplitBlock(newBlock);
+                }
+
                 var newHash = TrimHashKey(hash, block.LocalDepth);
 
                 if (newHash[block.LocalDepth - 1])
@@ -60,6 +74,7 @@ namespace AAUS2_HeapFile.File
                     block.Insert(record);
                 }
 
+                Directory[newHash] = _hashFile.GetFileLength();
                 _hashFile.InsertBlockIntoFile(address, block);
                 _hashFile.InsertBlockIntoFile(_hashFile.GetFileLength(), newBlock);
             }
@@ -88,6 +103,8 @@ namespace AAUS2_HeapFile.File
             var newBlock = HashBlock<T>.GetEmptyBlock(BlockSize);
             newBlock.LocalDepth = block.LocalDepth;
 
+            List<T> tmp = new List<T>();
+
             foreach (var record in block.Records)
             {
                 var hash = record.GetHash(Prop);
@@ -96,9 +113,14 @@ namespace AAUS2_HeapFile.File
                 if (bit)
                 {
                     newBlock.Insert(record);
-                    block.Remove(record);
+                    tmp.Add(record);
                 }
             } 
+
+            foreach (var record in tmp)
+            {
+                block.Remove(record);
+            }
 
             return (block, newBlock);
         }
@@ -106,7 +128,7 @@ namespace AAUS2_HeapFile.File
         private void DoubleDirectory()
         {
             GlobalDepth++;
-            Dictionary<BitArray, long> newDirectory = new Dictionary<BitArray, long>();
+            Dictionary<BitArray, long> newDirectory = new Dictionary<BitArray, long>(new BitArrayComparer());
 
             foreach (var item in Directory)
             {
@@ -151,6 +173,11 @@ namespace AAUS2_HeapFile.File
             }
             extended[hashKey.Length] = bitToSet;
             return extended;
+        }
+
+        public void Dispose()
+        {
+            _hashFile.Dispose();
         }
     }
 }
