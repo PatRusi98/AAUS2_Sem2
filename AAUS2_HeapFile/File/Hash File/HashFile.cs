@@ -109,7 +109,7 @@ namespace AAUS2_HeapFile.File
             return _file.Length;
         }
 
-        public List<T> GetAllSequential(bool consolePrint = false)
+        public List<T> GetAllSequential(bool consolePrint = true)
         {
             List<T> records = new();
             for (int i = 0; i < BlocksCount; i++)

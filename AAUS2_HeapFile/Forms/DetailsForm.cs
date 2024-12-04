@@ -22,6 +22,11 @@ namespace AAUS2_SemPraca
             EditButton.Enabled = false;
 
             SelectedEntity = selected;
+
+            NumberInput.Value = selected.ID;
+            NameInput.Text = selected.Name;
+            SurnameInput.Text = selected.Surname;
+            DescriptionInput.Text = selected.LicencePlate;
         }
 
         private bool ValidateInputs()
@@ -54,30 +59,22 @@ namespace AAUS2_SemPraca
             if (EditMode)
             {
                 NumberInput.Controls[0].Show();
-                Latitude1Input.Controls[0].Show();
-                Longitude1Input.Controls[0].Show();
-                Latitude2Input.Controls[0].Show();
-                Longitude2Input.Controls[0].Show();
+                NameInput.Controls[0].Show();
+                SurnameInput.Controls[0].Show();
+                DescriptionInput.Controls[0].Show();
             }
             else
             {
                 NumberInput.Controls[0].Hide();
-                Latitude1Input.Controls[0].Hide();
-                Longitude1Input.Controls[0].Hide();
-                Latitude2Input.Controls[0].Hide();
-                Longitude2Input.Controls[0].Hide();
+                NameInput.Controls[0].Hide();
+                SurnameInput.Controls[0].Hide();
+                DescriptionInput.Controls[0].Hide();
             }
 
             NumberInput.ReadOnly = !EditMode;
             DescriptionInput.ReadOnly = !EditMode;
-            Latitude1Input.ReadOnly = !EditMode;
-            Lat1CoordInput.Enabled = EditMode;
-            Longitude1Input.ReadOnly = !EditMode;
-            Long1CoordInput.Enabled = EditMode;
-            Latitude2Input.ReadOnly = !EditMode;
-            Lat2CoordInput.Enabled = EditMode;
-            Longitude2Input.ReadOnly = !EditMode;
-            Long2CoordInput.Enabled = EditMode;
+            NameInput.ReadOnly = !EditMode;
+            SurnameInput.ReadOnly = !EditMode;
             EditButton.Enabled = EditMode;
         }
     }

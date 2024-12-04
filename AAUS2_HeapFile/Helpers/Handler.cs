@@ -16,9 +16,9 @@ namespace AAUS2_HeapFile.Helpers
 
         private Handler()
         {
-            Data = new("data.dat", 5000);
-            IDAddresses = new("id.dat", 5000);
-            LPAddresses = new("lp.dat", 5000);
+            Data = new("data.dat", 8000);
+            IDAddresses = new("id.dat", 120);
+            LPAddresses = new("lp.dat", 120);
         }
 
         public static Handler Instance

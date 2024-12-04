@@ -99,9 +99,6 @@ namespace AAUS2_SemPraca
                 DataGridViewRow selectedRow = DataGrid.Rows[e.RowIndex];
                 Vehicle vehicle = selectedRow.Tag as Vehicle;
 
-                if (selectedRow.Cells["TypeColumn"].Value == null)
-                    return;
-
                 using (var detailsForm = new DetailsForm(selectedRow, vehicle))
                 {
                     if (detailsForm.ShowDialog() == DialogResult.OK)

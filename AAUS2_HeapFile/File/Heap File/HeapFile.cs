@@ -224,7 +224,7 @@ namespace AAUS2_HeapFile.File
                 BlockSize = Block<T>.GetEmptyBlock(BlockFactor).GetSize();
         }
 
-        public List<T> GetAllSequential(bool consolePrint = false)
+        public List<T> GetAllSequential(bool consolePrint = true)
         {
             List<T> records = new();
             for (int i = 0; i < BlocksCount; i++)

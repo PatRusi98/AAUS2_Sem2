@@ -8,7 +8,7 @@ namespace AAUS2_HeapFile.File
     public class ExtendibleHashing<T> where T : IHashFile<T>
     {
         private HashFile<T> _hashFile;
-        private Dictionary<BitArray, long> Directory;
+        private long[] Directory;
         private int BlockSize { get; set; }
         private int GlobalDepth { get; set; }
         private HashProperty Prop { get; set; } = HashProperty.None;
@@ -17,16 +17,14 @@ namespace AAUS2_HeapFile.File
         {
             BlockSize = blockSize;
             GlobalDepth = 1;
-            Directory = new Dictionary<BitArray, long>(new BitArrayComparer());
+            Directory = new long[1 << GlobalDepth];
 
             _hashFile = new HashFile<T>(hashFileName, blockSize);
 
-            for (int i = 0; i < (1 << GlobalDepth); i++)
+            for (int i = 0; i < Directory.Length; i++)
             {
-                var key = new BitArray(BitConverter.GetBytes(i));
                 long address = _hashFile.CreateNewBlock();
-                var trimmed = TrimHashKey(key, GlobalDepth);
-                Directory.Add(trimmed, address);
+                Directory[i] = address;
             }
         }
 
@@ -39,13 +37,12 @@ namespace AAUS2_HeapFile.File
             var address = GetHashAddress(hash);
 
             var block = _hashFile.GetBlockFromFile(address);
-            
+
             if (block.IsFull())
             {
                 if (GlobalDepth == block.LocalDepth)
                 {
                     DoubleDirectory();
-                    //address = GetHashAddress(hash);
                 }
 
                 (block, var newBlock) = SplitBlock(block);
@@ -64,6 +61,7 @@ namespace AAUS2_HeapFile.File
                 }
 
                 var newHash = TrimHashKey(hash, block.LocalDepth);
+                var index = GetIndexFromHash(newHash);
 
                 if (newHash[block.LocalDepth - 1])
                 {
@@ -72,9 +70,10 @@ namespace AAUS2_HeapFile.File
                 else
                 {
                     block.Insert(record);
+                    index++;
                 }
 
-                Directory[newHash] = _hashFile.GetFileLength();
+                Directory[index] = _hashFile.GetFileLength();
                 _hashFile.InsertBlockIntoFile(address, block);
                 _hashFile.InsertBlockIntoFile(_hashFile.GetFileLength(), newBlock);
             }
@@ -115,7 +114,7 @@ namespace AAUS2_HeapFile.File
                     newBlock.Insert(record);
                     tmp.Add(record);
                 }
-            } 
+            }
 
             foreach (var record in tmp)
             {
@@ -128,15 +127,12 @@ namespace AAUS2_HeapFile.File
         private void DoubleDirectory()
         {
             GlobalDepth++;
-            Dictionary<BitArray, long> newDirectory = new Dictionary<BitArray, long>(new BitArrayComparer());
+            var newDirectory = new long[1 << GlobalDepth];
 
-            foreach (var item in Directory)
+            for (int i = 0; i < Directory.Length; i++)
             {
-                var hash = item.Key;
-                var address = item.Value;
-
-                newDirectory.Add(ExtendHashKey(hash, false), address);
-                newDirectory.Add(ExtendHashKey(hash, true), address);
+                newDirectory[2 * i] = Directory[i];
+                newDirectory[2 * i + 1] = Directory[i];
             }
 
             Directory = newDirectory;
@@ -145,10 +141,11 @@ namespace AAUS2_HeapFile.File
         private long GetHashAddress(BitArray hashKey)
         {
             var trimmedHashKey = TrimHashKey(hashKey, GlobalDepth);
+            var index = GetIndexFromHash(trimmedHashKey);
 
-            if (Directory.TryGetValue(trimmedHashKey, out var address))
+            if (index < Directory.Length)
             {
-                return address;
+                return Directory[index];
             }
 
             throw new Exception("Hash address not found.");
@@ -164,15 +161,22 @@ namespace AAUS2_HeapFile.File
             return trimmed;
         }
 
-        private BitArray ExtendHashKey(BitArray hashKey, bool bitToSet)
+        private int GetIndexFromHash(BitArray hashKey)
         {
-            var extended = new BitArray(hashKey.Length + 1);
+            int index = 0;
+            var inverted = new BitArray(hashKey.Length);
             for (int i = 0; i < hashKey.Length; i++)
             {
-                extended[i] = hashKey[i];
+                inverted[i] = hashKey[hashKey.Length - i - 1];
             }
-            extended[hashKey.Length] = bitToSet;
-            return extended;
+            for (int i = 0; i < inverted.Length; i++)
+            {
+                if (inverted[i])
+                {
+                    index |= (1 << i);
+                }
+            }
+            return index;
         }
 
         public void Dispose()
