@@ -62,12 +62,12 @@ namespace AAUS2_HeapFile.Entities
 
         public BitArray GetHash(HashProperty filter)
         {
-            int[] weigths = { 11, 13, 17, 19, 23, 23, 19, 17, 13, 11 };
-            long hash = 0;
-
+            int[] weights = { 31, 37, 41, 43, 47, 47, 43, 41, 37, 31 };
+            int hash = 17;
+            
             for (int i = 0; i < _licencePlateLength; i++)
             {
-                hash = (hash + (_licencePlate[i] * weigths[i])) % long.MaxValue;  // zabranenie longu pretiect
+                hash = (hash * 31 + _licencePlate[i] * weights[i % weights.Length]) % Int32.MaxValue;
             }
 
             return new BitArray(BitConverter.GetBytes(hash));

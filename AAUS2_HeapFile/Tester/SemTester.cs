@@ -17,15 +17,15 @@ namespace AAUS2_HeapFile.Tester
         public SemTester()
         {
             var seed = _seedGen.Next();
-            //Random = new Random(seed);
-            _random = new Random(1590771754);
+            //_random = new Random(seed);
+            _random = new Random(319342472);
             _generator = Generator.Instance;
             _generator.Random = _random;
             Debug.WriteLine("Seed: " + seed);
 
             HeapFile = new HeapFile<Vehicle>("data_" + seed + ".dat", 5000);
-            IDAddresses = new ExtendibleHashing<VehicleIDToHashFile>("id_" + seed + ".dat", 40);
-            LicencePlateAddresses = new ExtendibleHashing<LicencePlateToHashFile>("licencePlate_" + seed + ".dat", 40);
+            IDAddresses = new ExtendibleHashing<VehicleIDToHashFile>("id_" + seed + ".dat", 5000);
+            LicencePlateAddresses = new ExtendibleHashing<LicencePlateToHashFile>("licencePlate_" + seed + ".dat", 5000);
         }
 
         public void TestInsert(int numberOfEntities, bool clearFile = false)
@@ -41,7 +41,7 @@ namespace AAUS2_HeapFile.Tester
                     var id = new VehicleIDToHashFile() { ID = record.ID, Address = address };
                     var licencePlate = new LicencePlateToHashFile() { LicencePlate = record.LicencePlate, Address = address };
                     IDAddresses.Insert(id, HashProperty.ID);
-                    //LicencePlateAddresses.Insert(licencePlate, HashProperty.LicencePlate);
+                    LicencePlateAddresses.Insert(licencePlate, HashProperty.LicencePlate);
                 }
             }
         }

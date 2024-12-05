@@ -2,10 +2,10 @@
 using AAUS2_SemPraca;
 
 // GUI
-//ApplicationConfiguration.Initialize();
-//Application.Run(new Form1());
+ApplicationConfiguration.Initialize();
+Application.Run(new Form1());
 
-SemTester tester = new();
-tester.TestInsert(20000);
+//SemTester tester = new();
+//tester.TestInsert(20000);
 
 Console.WriteLine("tu brejkac");

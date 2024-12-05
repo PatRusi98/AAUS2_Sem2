@@ -116,6 +116,11 @@ namespace AAUS2_HeapFile.Entities
         {
             if (data == null) return false;
 
+            if (data.ID == 0)
+            {
+                return LicencePlate == data.LicencePlate;
+            }
+
             return ID == data.ID;
         }
 
