@@ -64,13 +64,20 @@ namespace AAUS2_HeapFile.Entities
         {
             int[] weights = { 31, 37, 41, 43, 47, 47, 43, 41, 37, 31 };
             int hash = 17;
-            
+
             for (int i = 0; i < _licencePlateLength; i++)
             {
                 hash = (hash * 31 + _licencePlate[i] * weights[i % weights.Length]) % Int32.MaxValue;
             }
 
-            return new BitArray(BitConverter.GetBytes(hash));
+            var bitArray = new BitArray(BitConverter.GetBytes(hash));
+
+            //if (char.IsDigit(_licencePlate[0]))
+            //{
+            //    bitArray.Not();
+            //}
+
+            return bitArray;
         }
 
         public int GetSize()

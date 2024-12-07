@@ -27,6 +27,16 @@ namespace AAUS2_SemPraca
             NameInput.Text = selected.Name;
             SurnameInput.Text = selected.Surname;
             DescriptionInput.Text = selected.LicencePlate;
+
+            var dataSource = selected.Records;
+
+            foreach (var record in dataSource)
+            {
+                if (record != null)
+                {
+                    int rowIndex = DataGridService.Rows.Add(record.Date, record.Price, record.Description);
+                }
+            }
         }
 
         private bool ValidateInputs()
