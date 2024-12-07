@@ -1,7 +1,8 @@
 ﻿using AAUS2_HeapFile.Interfaces;
 using System.Diagnostics;
+using System.Net;
 
-namespace AAUS2_HeapFile.File
+namespace AAUS2_HeapFile.Files
 {
     public class HashFile<T> : IDisposable where T : IHashFile<T>
     {
@@ -18,15 +19,14 @@ namespace AAUS2_HeapFile.File
 
             _file = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
+            BlocksCount = 0;
+
             if (_file.Length > 0)
             {
-                // TODO nacitaj file
+                BlocksCount = (int)_file.Length / BlockSize;
             }
-            else
-            {
-                BlocksCount = 0;
-                BlockFactor = HashBlock<T>.GetBlockFactor(BlockSize);
-            }
+
+            BlockFactor = HashBlock<T>.GetBlockFactor(BlockSize);
         }
 
         public long Insert(T record, long address)

@@ -1,5 +1,5 @@
 ﻿using AAUS2_HeapFile.Entities;
-using AAUS2_HeapFile.File;
+using AAUS2_HeapFile.Files;
 using System.Diagnostics;
 using static AAUS2_HeapFile.Helpers.Enums;
 
@@ -105,8 +105,8 @@ namespace AAUS2_HeapFile.Tester
             }
 
             HeapFile.Dispose();
-            IDAddresses.Dispose();
-            LicencePlateAddresses.Dispose();
+            IDAddresses.Dispose("id_props_test.txt");
+            LicencePlateAddresses.Dispose("lp_props_test.txt");
         }
     }
 }

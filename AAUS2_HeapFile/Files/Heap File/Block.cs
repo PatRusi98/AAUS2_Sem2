@@ -1,20 +1,23 @@
 ﻿using AAUS2_HeapFile.Interfaces;
 using System.Text;
 
-namespace AAUS2_HeapFile.File
+namespace AAUS2_HeapFile.Files
 {
-    public class HashBlock<T> : IData where T : IRecord<T>
+    public class Block<T> : IData where T : IRecord<T>
     {
         public int ValidCount { get; private set; } = 0;
         public int TotalCount { get; private set; }
+        public long NextEmptyBlockAddress { get; set; } = -1;
+        public long PreviousEmptyBlockAddress { get; set; } = -1;
         public int BlockSize { get; set; }
-        public int LocalDepth { get; set; } = 1;
         public T[] Records { get; }
+        private static int HeaderSize { get; set; } = sizeof(int) + sizeof(long) * 2;
 
-        public HashBlock(int blockSize)
+        public Block(int blockSize)
         {
+            HeaderSize = sizeof(int) + sizeof(long) * 2;
             BlockSize = blockSize;
-            TotalCount = (blockSize - sizeof(int) - sizeof(int)) / Activator.CreateInstance<T>().GetSize();
+            TotalCount = (blockSize - HeaderSize) / Activator.CreateInstance<T>().GetSize();
             if (TotalCount == 0)
             {
                 throw new Exception("Small block size!!!");
@@ -22,14 +25,14 @@ namespace AAUS2_HeapFile.File
             Records = new T[TotalCount];
         }
 
-        public static HashBlock<T> GetEmptyBlock(int blockSize)
+        public static Block<T> GetEmptyBlock(int blockFactor)
         {
-            return new HashBlock<T>(blockSize);
+            return new Block<T>(blockFactor);
         }
 
         public static int GetBlockFactor(int blockSize)
-       {
-            return blockSize / Activator.CreateInstance<T>().GetSize();
+        {
+            return (blockSize - HeaderSize) / Activator.CreateInstance<T>().GetSize();
         }
 
         #region Overrides
@@ -37,10 +40,14 @@ namespace AAUS2_HeapFile.File
         {
             var index = 0;
 
-            LocalDepth = BitConverter.ToInt32(byteArray, index);
-            index += sizeof(int);
             ValidCount = BitConverter.ToInt32(byteArray, index);
             index += sizeof(int);
+
+            NextEmptyBlockAddress = BitConverter.ToInt64(byteArray, index);
+            index += sizeof(long);
+
+            PreviousEmptyBlockAddress = BitConverter.ToInt64(byteArray, index);
+            index += sizeof(long);
 
             for (int i = 0; i < ValidCount; i++)
             {
@@ -58,16 +65,21 @@ namespace AAUS2_HeapFile.File
 
         public byte[] ToByteArray()
         {
-            var localDepthBytes = BitConverter.GetBytes(LocalDepth);
             var validCountBytes = BitConverter.GetBytes(ValidCount);
+            var nextEmptyAddressBytes = BitConverter.GetBytes(NextEmptyBlockAddress);
+            var previousEmptyAddressBytes = BitConverter.GetBytes(PreviousEmptyBlockAddress);
 
             var byteArr = new byte[GetSize()];
             int offset = 0;
 
-            Buffer.BlockCopy(localDepthBytes, 0, byteArr, offset, localDepthBytes.Length);
-            offset += localDepthBytes.Length;
             Buffer.BlockCopy(validCountBytes, 0, byteArr, offset, validCountBytes.Length);
             offset += validCountBytes.Length;
+
+            Buffer.BlockCopy(nextEmptyAddressBytes, 0, byteArr, offset, nextEmptyAddressBytes.Length);
+            offset += nextEmptyAddressBytes.Length;
+
+            Buffer.BlockCopy(previousEmptyAddressBytes, 0, byteArr, offset, previousEmptyAddressBytes.Length);
+            offset += previousEmptyAddressBytes.Length;
 
             foreach (var record in Records)
             {
@@ -120,11 +132,6 @@ namespace AAUS2_HeapFile.File
             return result;
         }
 
-        public bool IsFull()
-        {
-            return ValidCount == TotalCount;
-        }
-
         public void Insert(T record)
         {
             if (ValidCount < TotalCount)
@@ -134,7 +141,7 @@ namespace AAUS2_HeapFile.File
             }
             else
             {
-                throw new Exception("HashBlock is full");
+                throw new Exception("Block is full");
             }
         }
 
@@ -163,8 +170,9 @@ namespace AAUS2_HeapFile.File
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"ValidCount: {ValidCount}");
             sb.AppendLine($"TotalCount: {TotalCount}");
+            sb.AppendLine($"NextEmptyBlockAddress: {NextEmptyBlockAddress}");
+            sb.AppendLine($"PreviousEmptyBlockAddress: {PreviousEmptyBlockAddress}");
             sb.AppendLine($"BlockSize: {BlockSize}");
-            sb.AppendLine($"LocalDepth: {LocalDepth}");
             sb.AppendLine("Records:");
 
             foreach (var record in Records)

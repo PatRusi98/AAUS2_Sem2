@@ -1,11 +1,9 @@
-﻿using AAUS2_HeapFile.Helpers;
-using AAUS2_HeapFile.Interfaces;
+﻿using AAUS2_HeapFile.Interfaces;
+using System;
 using System.Collections;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
 using static AAUS2_HeapFile.Helpers.Enums;
 
-namespace AAUS2_HeapFile.File
+namespace AAUS2_HeapFile.Files
 {
     public class ExtendibleHashing<T> where T : IHashFile<T>
     {
@@ -106,7 +104,6 @@ namespace AAUS2_HeapFile.File
                     }
                     else
                     {
-                        //prepisat dir podla novej hlbky
                         RewriteDirectoryToNullAddress(address);
                     }
 
@@ -279,8 +276,9 @@ namespace AAUS2_HeapFile.File
             return index;
         }
 
-        public void Dispose()
+        public void Dispose(string fileName)
         {
+            SavePropsIntoFile(fileName);
             _hashFile.Dispose();
         }
 
@@ -313,6 +311,56 @@ namespace AAUS2_HeapFile.File
             {
                 Directory[items[i]] = -1;
             }
+        }
+
+        public void SavePropsIntoFile(string fileName)
+        {
+            StreamWriter writer = new StreamWriter(fileName);
+            writer.WriteLine($"Property,{(int)Prop}");
+            writer.WriteLine($"GlobalDepth,{GlobalDepth}");
+            writer.Write("Directory,");
+            for (int i = 0; i < Directory.Length; i++)
+            {
+                writer.Write($"{Directory[i]}");
+                if (i < Directory.Length - 1)
+                {
+                    writer.Write(";");
+                }
+            }
+            writer.Close();
+        }
+
+        public void LoadPropsFromFile(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                return;
+            }
+
+            StreamReader reader = new StreamReader(fileName);
+            while (!reader.EndOfStream)
+            {
+                var line = reader.ReadLine();
+                var parts = line.Split(',');
+                if (parts[0] == "Property")
+                {
+                    Prop = (HashProperty)int.Parse(parts[1]);
+                }
+                else if (parts[0] == "GlobalDepth")
+                {
+                    GlobalDepth = int.Parse(parts[1]);
+                }
+                else if (parts[0] == "Directory")
+                {
+                    var dir = parts[1].Split(';');
+                    Directory = new long[dir.Length];
+                    for (int i = 0; i < dir.Length; i++)
+                    {
+                        Directory[i] = long.Parse(dir[i]);
+                    }
+                }
+            }
+            reader.Close();
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using AAUS2_HeapFile.Entities;
-using AAUS2_HeapFile.File;
+using AAUS2_HeapFile.Files;
 using AAUS2_HeapFile.Tester;
 using static AAUS2_HeapFile.Helpers.Enums;
 
@@ -18,7 +18,9 @@ namespace AAUS2_HeapFile.Helpers
         {
             Data = new("data.dat", 6000);
             IDAddresses = new("id.dat", 6000);
+            IDAddresses.LoadPropsFromFile("id_props.txt");
             LPAddresses = new("lp.dat", 6000);
+            LPAddresses.LoadPropsFromFile("lp_props.txt");
         }
 
         public static Handler Instance
@@ -130,8 +132,8 @@ namespace AAUS2_HeapFile.Helpers
         public void Dispose()
         {
             Data.Dispose();
-            IDAddresses.Dispose();
-            LPAddresses.Dispose();
+            IDAddresses.Dispose("id_props.txt");
+            LPAddresses.Dispose("lp_props.txt");
         }
     }
 }

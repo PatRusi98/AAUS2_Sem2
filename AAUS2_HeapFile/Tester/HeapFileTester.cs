@@ -1,5 +1,5 @@
 ﻿using AAUS2_HeapFile.Entities;
-using AAUS2_HeapFile.File;
+using AAUS2_HeapFile.Files;
 using System.Diagnostics;
 
 namespace AAUS2_HeapFile.Tester

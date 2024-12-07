@@ -2,7 +2,7 @@
 using AAUS2_HeapFile.Interfaces;
 using System.Diagnostics;
 
-namespace AAUS2_HeapFile.File
+namespace AAUS2_HeapFile.Files
 {
     public class HeapFile<T> : IDisposable where T : IRecord<T>
     {
