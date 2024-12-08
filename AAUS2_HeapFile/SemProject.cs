@@ -74,10 +74,15 @@ namespace AAUS2_HeapFile
             Handler.EditVehicle(vehicleToEdit, par);
         }
         
-        public void EditServiceRecord(ServiceRecord serviceRecordToEdit, DateTime date, double price, string description)
+        public void EditServiceRecord(Vehicle veh, ServiceRecord serviceRecordToEdit, DateTime date, double price, string description)
         {
             var par = new ServiceRecordParams() { Date = date, Price = price, Description = description };
-            //Handler.EditServiceRecord(serviceRecordToEdit, par);
+            Handler.EditServiceRecord(veh, serviceRecordToEdit, par);
+        }
+
+        public void DeleteServiceRecord(Vehicle veh, ServiceRecord serviceRecordToDelete)
+        {
+            Handler.DeleteServiceRecord(veh, serviceRecordToDelete);
         }
 
         public void GenerateRandomVehicles(int number)
@@ -106,6 +111,21 @@ namespace AAUS2_HeapFile
         public List<Vehicle> GetAllVehicles()
         {
             return Handler.GetAllVehicles();
+        }
+
+        public string SequentialData()
+        {
+            return Handler.GetDataSequential();
+        }
+
+        public string SequentialLP()
+        {
+            return Handler.GetLPSequential();
+        }
+
+        public string SequentialID()
+        {
+            return Handler.GetIDSequential();
         }
 
         public void Dispose()

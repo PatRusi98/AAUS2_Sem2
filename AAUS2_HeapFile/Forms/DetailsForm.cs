@@ -1,6 +1,5 @@
 ﻿using AAUS2_HeapFile;
 using AAUS2_HeapFile.Entities;
-using AAUS2_HeapFile.Helpers;
 
 namespace AAUS2_SemPraca
 {
@@ -18,7 +17,7 @@ namespace AAUS2_SemPraca
         {
             InitializeComponent();
             _project = SemProject.Instance;
-            
+
             EditButton.Enabled = false;
 
             SelectedEntity = selected;
@@ -39,19 +38,14 @@ namespace AAUS2_SemPraca
             }
         }
 
-        private bool ValidateInputs()
-        {
-            
-
-            return true;
-        }
-
         private void EditButton_Click(object sender, EventArgs e)
         {
             if (EditMode)
             {
                 VehName = NameInput.Text;
                 Surname = SurnameInput.Text;
+                LicencePlate = DescriptionInput.Text;
+                ID = (int)NumberInput.Value;
 
                 DialogResult = DialogResult.OK;
                 Close();
@@ -60,32 +54,77 @@ namespace AAUS2_SemPraca
 
         private void DeleteButton_Click(object sender, EventArgs e)
         {
+
         }
 
         private void EditCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             EditMode = EditCheckBox.Checked;
 
-            if (EditMode)
-            {
-                NumberInput.Controls[0].Show();
-                NameInput.Controls[0].Show();
-                SurnameInput.Controls[0].Show();
-                DescriptionInput.Controls[0].Show();
-            }
-            else
-            {
-                NumberInput.Controls[0].Hide();
-                NameInput.Controls[0].Hide();
-                SurnameInput.Controls[0].Hide();
-                DescriptionInput.Controls[0].Hide();
-            }
-
-            NumberInput.ReadOnly = !EditMode;
-            DescriptionInput.ReadOnly = !EditMode;
             NameInput.ReadOnly = !EditMode;
             SurnameInput.ReadOnly = !EditMode;
             EditButton.Enabled = EditMode;
+            addSRButton.Enabled = EditMode;
+            editSRButton.Enabled = EditMode;
+            button1.Enabled = EditMode;
+        }
+
+        private void DataGridService_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void addSRButton_Click(object sender, EventArgs e)
+        {
+            using (var insertSRForm = new InsertSRForm())
+            {
+                if (insertSRForm.ShowDialog() == DialogResult.OK)
+                {
+                    var date = insertSRForm.ServDate;
+                    var price = insertSRForm.Price;
+                    var description = insertSRForm.Description;
+
+                    _project.InsertServiceRecords(SelectedEntity, date, price, description);
+                }
+            }
+        }
+
+        private void editSRButton_Click(object sender, EventArgs e)
+        {
+            using (var insertSRForm = new InsertSRForm())
+            {
+                if (insertSRForm.ShowDialog() == DialogResult.OK)
+                {
+                    var selectedRow = DataGridService.SelectedRows[0];
+                    var selectedRecord = SelectedEntity.Records.FirstOrDefault(record =>
+                        record.Date == (DateTime)selectedRow.Cells[0].Value &&
+                        record.Price == (double)selectedRow.Cells[1].Value &&
+                        record.Description == (string)selectedRow.Cells[2].Value);
+
+                    if (selectedRecord != null)
+                    {
+                        var date = insertSRForm.ServDate;
+                        var price = insertSRForm.Price;
+                        var description = insertSRForm.Description;
+
+                        _project.EditServiceRecord(SelectedEntity, selectedRecord, date, price, description);
+                    }
+                }
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var selectedRow = DataGridService.SelectedRows[0];
+            var selectedRecord = SelectedEntity.Records.FirstOrDefault(record =>
+                record.Date == (DateTime)selectedRow.Cells[0].Value &&
+                record.Price == (double)selectedRow.Cells[1].Value &&
+                record.Description == (string)selectedRow.Cells[2].Value);
+
+            if (selectedRecord != null)
+            {
+                _project.DeleteServiceRecord(SelectedEntity, selectedRecord);
+            }
         }
     }
 }

@@ -44,6 +44,9 @@
             Date = new DataGridViewTextBoxColumn();
             Price = new DataGridViewTextBoxColumn();
             Description = new DataGridViewTextBoxColumn();
+            addSRButton = new Button();
+            editSRButton = new Button();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)NumberInput).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DataGridService).BeginInit();
             SuspendLayout();
@@ -162,12 +165,15 @@
             // 
             // DataGridService
             // 
+            DataGridService.AllowUserToOrderColumns = true;
             DataGridService.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             DataGridService.Columns.AddRange(new DataGridViewColumn[] { Date, Price, Description });
             DataGridService.Location = new Point(260, 12);
             DataGridService.Name = "DataGridService";
             DataGridService.Size = new Size(524, 190);
             DataGridService.TabIndex = 54;
+            DataGridService.TabStop = false;
+            DataGridService.CellContentClick += DataGridService_CellContentClick;
             // 
             // Date
             // 
@@ -194,11 +200,48 @@
             Description.Name = "Description";
             Description.ReadOnly = true;
             // 
+            // addSRButton
+            // 
+            addSRButton.DialogResult = DialogResult.OK;
+            addSRButton.Enabled = false;
+            addSRButton.Location = new Point(260, 208);
+            addSRButton.Name = "addSRButton";
+            addSRButton.Size = new Size(75, 23);
+            addSRButton.TabIndex = 56;
+            addSRButton.Text = "Add SR";
+            addSRButton.UseVisualStyleBackColor = true;
+            addSRButton.Click += addSRButton_Click;
+            // 
+            // editSRButton
+            // 
+            editSRButton.DialogResult = DialogResult.Cancel;
+            editSRButton.Location = new Point(351, 208);
+            editSRButton.Name = "editSRButton";
+            editSRButton.Size = new Size(75, 23);
+            editSRButton.TabIndex = 55;
+            editSRButton.Text = "Edit SR";
+            editSRButton.UseVisualStyleBackColor = true;
+            editSRButton.Click += editSRButton_Click;
+            // 
+            // button1
+            // 
+            button1.DialogResult = DialogResult.Cancel;
+            button1.Location = new Point(442, 208);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 57;
+            button1.Text = "Delete SR";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // DetailsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(796, 261);
+            Controls.Add(button1);
+            Controls.Add(addSRButton);
+            Controls.Add(editSRButton);
             Controls.Add(DataGridService);
             Controls.Add(SurnameInput);
             Controls.Add(NameInput);
@@ -259,5 +302,8 @@
         private DataGridViewTextBoxColumn Date;
         private DataGridViewTextBoxColumn Price;
         private DataGridViewTextBoxColumn Description;
+        private Button addSRButton;
+        private Button editSRButton;
+        private Button button1;
     }
 }

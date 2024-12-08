@@ -160,7 +160,7 @@ namespace AAUS2_HeapFile.Entities
 
         public override string ToString()
         {
-            return $"Date: {Date}, Price: {Price}, Description: {Description}";
+            return $"\nDate: {Date}, Price: {Price}, Description: {Description}";
         }
     }
 }

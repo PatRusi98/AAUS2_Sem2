@@ -330,6 +330,11 @@ namespace AAUS2_HeapFile.Files
             writer.Close();
         }
 
+        public string SequentialToString()
+        {
+            return _hashFile.SequentialToString();
+        }
+
         public void LoadPropsFromFile(string fileName)
         {
             if (!File.Exists(fileName))

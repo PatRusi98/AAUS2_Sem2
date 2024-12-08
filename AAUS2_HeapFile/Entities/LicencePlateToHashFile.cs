@@ -105,7 +105,7 @@ namespace AAUS2_HeapFile.Entities
             return byteArr;
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return $"Licence plate: {LicencePlate}, Address: {Address}";
         }

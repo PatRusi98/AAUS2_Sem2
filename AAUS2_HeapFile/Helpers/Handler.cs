@@ -38,6 +38,9 @@ namespace AAUS2_HeapFile.Helpers
 
         public void InsertVehicle(Vehicle veh, ServiceRecord sr = null)
         {
+            if (sr != null)
+                veh.Records.Add(sr);
+
             var address = Data.Insert(veh);
             var id = new VehicleIDToHashFile() { ID = veh.ID, Address = address };
             var lp = new LicencePlateToHashFile() { LicencePlate = veh.LicencePlate, Address = address };
@@ -129,11 +132,41 @@ namespace AAUS2_HeapFile.Helpers
             tester.CreateTestCase(numberOfIterations,0 , insertProb, searchProb);
         }
 
+        public string GetDataSequential()
+        {
+            return Data.SequentialToString();
+        }
+
+        public string GetIDSequential()
+        {
+            return IDAddresses.SequentialToString();
+        }
+
+        public string GetLPSequential()
+        {
+            return LPAddresses.SequentialToString();
+        }
+
         public void Dispose()
         {
             Data.Dispose();
             IDAddresses.Dispose("id_props.txt");
             LPAddresses.Dispose("lp_props.txt");
+        }
+
+        public void DeleteServiceRecord(Vehicle veh, ServiceRecord serviceRecordToDelete)
+        {
+            for (int i = 0; i < veh.Records.Count; i++)
+            {
+                if (veh.Records[i].Equals(serviceRecordToDelete))
+                {
+                    veh.Records.RemoveAt(i);
+                    break;
+                }
+            }
+            var id = new VehicleIDToHashFile() { ID = veh.ID };
+            var address = IDAddresses.Search(id, HashProperty.ID);
+            Data.Update(veh, address.Address);
         }
     }
 }

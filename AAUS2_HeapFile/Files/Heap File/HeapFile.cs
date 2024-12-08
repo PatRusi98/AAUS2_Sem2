@@ -1,6 +1,7 @@
 ﻿using AAUS2_HeapFile.Entities;
 using AAUS2_HeapFile.Interfaces;
 using System.Diagnostics;
+using System.Text;
 
 namespace AAUS2_HeapFile.Files
 {
@@ -261,6 +262,28 @@ namespace AAUS2_HeapFile.Files
             WriteFileHeader();
             _file.Close();
             _file.Dispose();
+        }
+
+        public string SequentialToString()
+        {
+            StringBuilder sb = new();
+
+            sb.AppendLine("FILE HEADER:");
+            sb.AppendLine("BlocksCount: " + BlocksCount);
+            sb.AppendLine("BlockFactor: " + BlockFactor);
+            sb.AppendLine("BlockSize: " + BlockSize);
+            sb.AppendLine("EmptyBlockAddress: " + EmptyBlockAddress);
+            sb.AppendLine("PartiallyEmptyBlockAddress: " + PartiallyEmptyBlockAddress);
+            sb.AppendLine("**********************************************************************************************");
+
+            for (int i = 1; i <= BlocksCount; i++)
+            {
+                sb.AppendLine("BLOCK " + i + ":");
+                var block = GetBlockFromFile(i * BlockSize);
+                sb.AppendLine(block.ToString());
+                sb.AppendLine("**********************************************************************************************");
+            }
+            return sb.ToString();
         }
 
         #region File Header

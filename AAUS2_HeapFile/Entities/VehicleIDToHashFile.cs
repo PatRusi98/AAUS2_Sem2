@@ -71,7 +71,7 @@ namespace AAUS2_HeapFile.Entities
 
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return $"ID: {ID}, Address: {Address}";
         }

@@ -172,12 +172,20 @@ namespace AAUS2_HeapFile.Files
             sb.AppendLine($"TotalCount: {TotalCount}");
             sb.AppendLine($"NextEmptyBlockAddress: {NextEmptyBlockAddress}");
             sb.AppendLine($"PreviousEmptyBlockAddress: {PreviousEmptyBlockAddress}");
-            sb.AppendLine($"BlockSize: {BlockSize}");
             sb.AppendLine("Records:");
 
             foreach (var record in Records)
             {
-                sb.AppendLine(record?.ToString() ?? "null");
+                if (record != null)
+                {
+                    sb.AppendLine(record.ToString() ?? "null");
+                }
+                else
+                {
+                    sb.AppendLine("Others are null");
+                    break;
+                }
+
             }
 
             return sb.ToString();

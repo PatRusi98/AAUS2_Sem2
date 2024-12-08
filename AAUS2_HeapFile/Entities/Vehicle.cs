@@ -238,12 +238,12 @@ namespace AAUS2_HeapFile.Entities
             throw new Exception("Invalid filter.");
         }
 
-        public string ToString()
+        public override string ToString()
         {
             var str = $"ID: {ID}, Name: {Name}, Surname: {Surname}, Licence Plate: {LicencePlate}";
             foreach (var record in Records)
             {
-                str += $"\n{record.ToString()}";
+                str += $" {record.ToString()}";
             }
 
             return str;

@@ -1,5 +1,6 @@
 using AAUS2_HeapFile;
 using AAUS2_HeapFile.Entities;
+using AAUS2_HeapFile.Forms;
 using AAUS2_SemPraca.Forms;
 using static AAUS2_HeapFile.Helpers.Enums;
 
@@ -127,6 +128,36 @@ namespace AAUS2_SemPraca
                 {
                     var numberOfVehicles = generatorForm.NumberOfObjects;
                     _project.GenerateRandomVehicles(numberOfVehicles);
+                }
+            }
+        }
+
+        private void iDHashFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var hashForm = new Sequential(_project.SequentialID()))
+            {
+                if (hashForm.ShowDialog() == DialogResult.OK)
+                {
+                }
+            }
+        }
+
+        private void dataHeapFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var hashForm = new Sequential(_project.SequentialData()))
+            {
+                if (hashForm.ShowDialog() == DialogResult.OK)
+                {
+                }
+            }
+        }
+
+        private void licencePlatesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var hashForm = new Sequential(_project.SequentialID()))
+            {
+                if (hashForm.ShowDialog() == DialogResult.OK)
+                {
                 }
             }
         }

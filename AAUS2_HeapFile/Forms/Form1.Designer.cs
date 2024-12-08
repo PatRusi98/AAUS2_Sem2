@@ -44,6 +44,10 @@
             IDColumn = new DataGridViewTextBoxColumn();
             LicencePlateColumn = new DataGridViewTextBoxColumn();
             Details = new DataGridViewButtonColumn();
+            sequentialPrintToolStripMenuItem = new ToolStripMenuItem();
+            dataHeapFileToolStripMenuItem = new ToolStripMenuItem();
+            iDHashFileToolStripMenuItem = new ToolStripMenuItem();
+            licencePlatesToolStripMenuItem = new ToolStripMenuItem();
             Menu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)DataGrid).BeginInit();
             SuspendLayout();
@@ -51,7 +55,7 @@
             // Menu
             // 
             Menu.ImageScalingSize = new Size(24, 24);
-            Menu.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, vehicleToolStripMenuItem, generatorToolStripMenuItem });
+            Menu.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, vehicleToolStripMenuItem, generatorToolStripMenuItem, sequentialPrintToolStripMenuItem });
             Menu.Location = new Point(0, 0);
             Menu.Name = "Menu";
             Menu.Padding = new Padding(4, 1, 0, 1);
@@ -182,6 +186,34 @@
             Details.Name = "Details";
             Details.Text = "Details";
             // 
+            // sequentialPrintToolStripMenuItem
+            // 
+            sequentialPrintToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { dataHeapFileToolStripMenuItem, iDHashFileToolStripMenuItem, licencePlatesToolStripMenuItem });
+            sequentialPrintToolStripMenuItem.Name = "sequentialPrintToolStripMenuItem";
+            sequentialPrintToolStripMenuItem.Size = new Size(102, 22);
+            sequentialPrintToolStripMenuItem.Text = "Sequential Print";
+            // 
+            // dataHeapFileToolStripMenuItem
+            // 
+            dataHeapFileToolStripMenuItem.Name = "dataHeapFileToolStripMenuItem";
+            dataHeapFileToolStripMenuItem.Size = new Size(180, 22);
+            dataHeapFileToolStripMenuItem.Text = "Data";
+            dataHeapFileToolStripMenuItem.Click += dataHeapFileToolStripMenuItem_Click;
+            // 
+            // iDHashFileToolStripMenuItem
+            // 
+            iDHashFileToolStripMenuItem.Name = "iDHashFileToolStripMenuItem";
+            iDHashFileToolStripMenuItem.Size = new Size(180, 22);
+            iDHashFileToolStripMenuItem.Text = "ID";
+            iDHashFileToolStripMenuItem.Click += iDHashFileToolStripMenuItem_Click;
+            // 
+            // licencePlatesToolStripMenuItem
+            // 
+            licencePlatesToolStripMenuItem.Name = "licencePlatesToolStripMenuItem";
+            licencePlatesToolStripMenuItem.Size = new Size(180, 22);
+            licencePlatesToolStripMenuItem.Text = "Licence Plates";
+            licencePlatesToolStripMenuItem.Click += licencePlatesToolStripMenuItem_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -220,5 +252,9 @@
         private DataGridViewTextBoxColumn IDColumn;
         private DataGridViewTextBoxColumn LicencePlateColumn;
         private DataGridViewButtonColumn Details;
+        private ToolStripMenuItem sequentialPrintToolStripMenuItem;
+        private ToolStripMenuItem dataHeapFileToolStripMenuItem;
+        private ToolStripMenuItem iDHashFileToolStripMenuItem;
+        private ToolStripMenuItem licencePlatesToolStripMenuItem;
     }
 }
