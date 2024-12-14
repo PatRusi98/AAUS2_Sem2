@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="AAUS2_HeapFile.Helpers.Handler" Collapsed="true">
+    <Position X="4.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ADAEAABAQCBAAACQEAABQAAAAAAAABAAQAIACAAAwAE=</HashCode>
+      <FileName>Helpers\Handler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AAUS2_HeapFile.SemProject" Collapsed="true">
+    <Position X="6.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEABBAQCA4EAAQAAABAAAAAAEAAAAAQAIgCAAAgAE=</HashCode>
+      <FileName>SemProject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AAUS2_HeapFile.Entities.LicencePlateToHashFile" Collapsed="true">
+    <Position X="3.5" Y="6" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAACkIAAAAAAACEgIAAAAAAAAAAAAACEAAAACAAAAA=</HashCode>
+      <FileName>Entities\LicencePlateToHashFile.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="AAUS2_HeapFile.Entities.ServiceRecord" Collapsed="true">
+    <Position X="8.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACgAAAQAgAACEgIAAAAAAAAAAAgAJAAAAAAAAAAI=</HashCode>
+      <FileName>Entities\ServiceRecord.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="AAUS2_HeapFile.Entities.Vehicle" Collapsed="true">
+    <Position X="8.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IEAAOmIACAgAgACEiIAAAAQAREAAAAACEAAAACAEIAA=</HashCode>
+      <FileName>Entities\Vehicle.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="AAUS2_HeapFile.Entities.VehicleIDToHashFile" Collapsed="true">
+    <Position X="3.5" Y="7" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAACgAAAAAAgACEgIAAAAAAAAAAAAACAAAAAAAgAAA=</HashCode>
+      <FileName>Entities\VehicleIDToHashFile.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="AAUS2_HeapFile.Files.HashBlock&lt;T&gt;" Collapsed="true">
+    <Position X="0.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAACEAAAAAAJADEAIAABAAAAAAAAEAIAgAAACAAAAg=</HashCode>
+      <FileName>Files\Hash File\HashBlock.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="AAUS2_HeapFile.Files.HashFile&lt;T&gt;" Collapsed="true">
+    <Position X="0.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAEAKACAAAABEAAAAQAAAAAAAAAAAAAJCACBgEAA=</HashCode>
+      <FileName>Files\Hash File\HashFile.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="AAUS2_HeapFile.Files.Block&lt;T&gt;" Collapsed="true">
+    <Position X="2.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IBAACEAAAAAABADMAIAABAQAAAAAAEAAAgAAACAAAAg=</HashCode>
+      <FileName>Files\Heap File\Block.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="AAUS2_HeapFile.Files.HeapFile&lt;T&gt;" Collapsed="true">
+    <Position X="2.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQQAkAKACAAAAJEAAAAAgAAAAEAAAAAQAJGACBAEAA=</HashCode>
+      <FileName>Files\Heap File\HeapFile.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="AAUS2_HeapFile.Files.ExtendibleHashing&lt;T&gt;" Collapsed="true">
+    <Position X="0.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAFAYACAEAgAAAAAAAAAAAAAAAAgBAAAAICwgEAY=</HashCode>
+      <FileName>Files\ExtendibleHashing.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="AAUS2_HeapFile.Interfaces.IData" Collapsed="true">
+    <Position X="8.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAAAAACAAIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IData.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="AAUS2_HeapFile.Interfaces.IHashFile&lt;T&gt;" Collapsed="true">
+    <Position X="6.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IHashFile.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="AAUS2_HeapFile.Interfaces.IRecord&lt;T&gt;" Collapsed="true">
+    <Position X="7.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IRecord.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

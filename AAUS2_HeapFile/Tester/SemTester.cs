@@ -23,7 +23,7 @@ namespace AAUS2_HeapFile.Tester
             //_random = new Random(1141471009); // TU PREPISUJ SEED KED TREBA
             _generator = Generator.Instance;
             _generator.Random = _random;
-            Debug.WriteLine("Seed: " + seed);
+            //Debug.WriteLine("Seed: " + seed);
 
             HeapFile = new HeapFile<Vehicle>("data_" + seed + ".dat", 5000);
             IDAddresses = new ExtendibleHashing<VehicleIDToHashFile>("id_" + seed + ".dat", 70);
@@ -34,7 +34,7 @@ namespace AAUS2_HeapFile.Tester
         {
             for (int i = 0; i < numberOfEntities; i++)
             {
-                Debug.WriteLine("Iteracia: " + i);
+                //Debug.WriteLine("Iteracia: " + i);
                 var person = _generator.GenerateRecords(1);
 
                 foreach (var record in person)
@@ -42,8 +42,8 @@ namespace AAUS2_HeapFile.Tester
                     var address = HeapFile.Insert(record);
                     var id = new VehicleIDToHashFile() { ID = record.ID, Address = address };
                     var licencePlate = new LicencePlateToHashFile() { LicencePlate = record.LicencePlate, Address = address };
-                    IDAddresses.Insert(id, HashProperty.ID);
-                    LicencePlateAddresses.Insert(licencePlate, HashProperty.LicencePlate);
+                    IDAddresses.Insert(id);
+                    LicencePlateAddresses.Insert(licencePlate);
                     vehicles.Add(record);
                 }
             }
@@ -55,18 +55,16 @@ namespace AAUS2_HeapFile.Tester
             {
                 foreach (var vehicle in vehicles)
                 {
-                    var idSearchResult = IDAddresses.Search(new VehicleIDToHashFile { ID = vehicle.ID }, HashProperty.ID);
-                    var licencePlateSearchResult = LicencePlateAddresses.Search(new LicencePlateToHashFile { LicencePlate = vehicle.LicencePlate }, HashProperty.LicencePlate);
+                    var idSearchResult = IDAddresses.Search(new VehicleIDToHashFile { ID = vehicle.ID });
+                    var licencePlateSearchResult = LicencePlateAddresses.Search(new LicencePlateToHashFile { LicencePlate = vehicle.LicencePlate });
                     if (licencePlateSearchResult != null)
                     {
                         var veh = HeapFile.Get(licencePlateSearchResult.Address, new Vehicle());
                     }
                     else
                     {
-                        Debug.WriteLine($"tu brejkac");
+                        //Debug.WriteLine($"tu brejkac");
                     }
-                    Debug.WriteLine($"Search ID: {vehicle.ID}, Found: {idSearchResult != null}");
-                    Debug.WriteLine($"Search Licence Plate: {vehicle.LicencePlate}, Found: {licencePlateSearchResult != null}");
                 }
             }
         }

@@ -118,7 +118,7 @@ namespace AAUS2_HeapFile.Files
                 var block = GetBlockFromFile(i * BlockSize);
 
                 if (consolePrint)
-                    Debug.WriteLine(block.ToString());
+                    //Debug.WriteLine(block.ToString());
 
                 records.AddRange(block.GetAll());
             }

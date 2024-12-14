@@ -60,7 +60,7 @@ namespace AAUS2_HeapFile.Entities
             Address = BitConverter.ToInt64(byteArray, sizeof(int) + _licencePlateLength);
         }
 
-        public BitArray GetHash(HashProperty filter)
+        public BitArray GetHash()
         {
             int[] weights = { 31, 37, 41, 43, 47, 47, 43, 41, 37, 31 };
             int hash = 17;

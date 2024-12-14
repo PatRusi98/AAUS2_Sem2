@@ -44,8 +44,8 @@ namespace AAUS2_HeapFile.Helpers
             var address = Data.Insert(veh);
             var id = new VehicleIDToHashFile() { ID = veh.ID, Address = address };
             var lp = new LicencePlateToHashFile() { LicencePlate = veh.LicencePlate, Address = address };
-            IDAddresses.Insert(id, HashProperty.ID);
-            LPAddresses.Insert(lp, HashProperty.LicencePlate);
+            IDAddresses.Insert(id);
+            LPAddresses.Insert(lp);
         }
 
         public Vehicle SearchVehicle(HashProperty searchBy, object value)
@@ -56,13 +56,13 @@ namespace AAUS2_HeapFile.Helpers
                 case HashProperty.ID:
                     veh.ID = (int)value;
                     var id = new VehicleIDToHashFile() { ID = (int)value };
-                    var address = IDAddresses.Search(id, HashProperty.ID);
+                    var address = IDAddresses.Search(id);
                     veh = Data.Get(address.Address, veh);
                     break;
                 case HashProperty.LicencePlate:
                     veh.LicencePlate = (string)value;
                     var lp = new LicencePlateToHashFile() { LicencePlate = (string)value };
-                    var lpAddress = LPAddresses.Search(lp, HashProperty.LicencePlate);
+                    var lpAddress = LPAddresses.Search(lp);
                     veh = Data.Get(lpAddress.Address, veh);
                     break;
             }
@@ -79,7 +79,7 @@ namespace AAUS2_HeapFile.Helpers
                 veh.Surname = par.Surname;
 
             var id = new VehicleIDToHashFile() { ID = veh.ID };
-            var address = IDAddresses.Search(id, HashProperty.ID);
+            var address = IDAddresses.Search(id);
 
             Data.Update(veh, address.Address);
         }
@@ -105,7 +105,7 @@ namespace AAUS2_HeapFile.Helpers
             }
 
             var id = new VehicleIDToHashFile() { ID = veh.ID };
-            var address = IDAddresses.Search(id, HashProperty.ID);
+            var address = IDAddresses.Search(id);
 
             Data.Update(veh, address.Address);
         }
@@ -115,7 +115,7 @@ namespace AAUS2_HeapFile.Helpers
             veh.Records.Add(sr);
 
             var id = new VehicleIDToHashFile() { ID = veh.ID };
-            var address = IDAddresses.Search(id, HashProperty.ID);
+            var address = IDAddresses.Search(id);
 
             Data.Update(veh, address.Address);
         }
@@ -165,7 +165,7 @@ namespace AAUS2_HeapFile.Helpers
                 }
             }
             var id = new VehicleIDToHashFile() { ID = veh.ID };
-            var address = IDAddresses.Search(id, HashProperty.ID);
+            var address = IDAddresses.Search(id);
             Data.Update(veh, address.Address);
         }
     }

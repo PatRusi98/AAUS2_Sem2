@@ -19,7 +19,7 @@ namespace AAUS2_HeapFile.Tester
             //Random = new Random(853474812);
             _generator = Generator.Instance;
             _generator.Random = _random;
-            Debug.WriteLine("Seed: " + seed);
+            //Debug.WriteLine("Seed: " + seed);
 
             HeapFile = new HeapFile<Vehicle>(filePath, 200);
         }

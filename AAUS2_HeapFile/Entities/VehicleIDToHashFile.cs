@@ -15,7 +15,7 @@ namespace AAUS2_HeapFile.Entities
             Address = -1;
         }
 
-        public BitArray GetHash(HashProperty filter)
+        public BitArray GetHash()
         {
             CheckIfNotNull();
             return new BitArray(BitConverter.GetBytes(ID));

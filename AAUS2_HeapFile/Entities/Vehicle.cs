@@ -5,7 +5,7 @@ using static AAUS2_HeapFile.Helpers.Enums;
 
 namespace AAUS2_HeapFile.Entities
 {
-    public class Vehicle : IHashFile<Vehicle>
+    public class Vehicle : IRecord<Vehicle>
     {
         private static int LastId = 0;
         private const int _nameLength = 15;
@@ -224,20 +224,6 @@ namespace AAUS2_HeapFile.Entities
             return (5 * sizeof(int)) + _nameLength + _surnameLength + _licencePlateLength + (Activator.CreateInstance<ServiceRecord>().GetSize() * _recordsCount);
         }
 
-        public BitArray GetHash(HashProperty filter)
-        {
-            if (filter == HashProperty.ID)
-            {
-                return GetIDHash();
-            }
-            else if (filter == HashProperty.LicencePlate)
-            {
-                return GetLicencePlateHash();
-            }
-
-            throw new Exception("Invalid filter.");
-        }
-
         public override string ToString()
         {
             var str = $"ID: {ID}, Name: {Name}, Surname: {Surname}, Licence Plate: {LicencePlate}";
@@ -249,23 +235,23 @@ namespace AAUS2_HeapFile.Entities
             return str;
         }
 
-        private BitArray GetIDHash()
-        {
-            return new BitArray(BitConverter.GetBytes(ID));
-        }
+        //private BitArray GetIDHash()
+        //{
+        //    return new BitArray(BitConverter.GetBytes(ID));
+        //}
 
-        private BitArray GetLicencePlateHash()
-        {
-            int[] weigths = { 2, 3, 5, 7, 11, 11, 7, 5, 3, 2 };
-            long hash = 0;
+        //private BitArray GetLicencePlateHash()
+        //{
+        //    int[] weigths = { 2, 3, 5, 7, 11, 11, 7, 5, 3, 2 };
+        //    long hash = 0;
 
-            for (int i = 0; i < _licencePlateLength; i++)
-            {
-                hash = (hash + (_licencePlate[i] * weigths[i])) % long.MaxValue;  // zabranenie longu pretiect
-            }
+        //    for (int i = 0; i < _licencePlateLength; i++)
+        //    {
+        //        hash = (hash + (_licencePlate[i] * weigths[i])) % long.MaxValue;  // zabranenie longu pretiect
+        //    }
 
-            return new BitArray(BitConverter.GetBytes(hash));
-        }
+        //    return new BitArray(BitConverter.GetBytes(hash));
+        //}
 
         public static int GenerateId()                      // stack overflow kod: https://stackoverflow.com/questions/51641722/create-a-c-sharp-method-to-generate-auto-increment-id
         {

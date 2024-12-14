@@ -11,7 +11,6 @@ namespace AAUS2_HeapFile.Files
         private long[] Directory;
         private int BlockSize { get; set; }
         private int GlobalDepth { get; set; }
-        private HashProperty Prop { get; set; } = HashProperty.None;
 
         public ExtendibleHashing(string hashFileName, int blockSize)
         {
@@ -28,12 +27,9 @@ namespace AAUS2_HeapFile.Files
             }
         }
 
-        public void Insert(T record, HashProperty hashBy)
+        public void Insert(T record)
         {
-            if (Prop == HashProperty.None)
-                Prop = hashBy;
-
-            var hash = record.GetHash(Prop);
+            var hash = record.GetHash();
             var address = GetHashAddress(hash);
             var block = HashBlock<T>.GetEmptyBlock(BlockSize);
 
@@ -166,12 +162,9 @@ namespace AAUS2_HeapFile.Files
             }
         }
 
-        public T Search(T record, HashProperty hashBy)
+        public T Search(T record)
         {
-            if (Prop == HashProperty.None)
-                Prop = hashBy;
-
-            var hash = record.GetHash(Prop);
+            var hash = record.GetHash();
             var address = GetHashAddress(hash);
             var block = _hashFile.GetBlockFromFile(address);
 
@@ -188,7 +181,7 @@ namespace AAUS2_HeapFile.Files
 
             foreach (var record in block.Records)
             {
-                var hash = record.GetHash(Prop);
+                var hash = record.GetHash();
                 var bit = hash[block.LocalDepth - 1];
 
                 if (bit)
@@ -204,7 +197,7 @@ namespace AAUS2_HeapFile.Files
             }
 
             var inserted = false;
-            var newHash = recordToInsert.GetHash(Prop);
+            var newHash = recordToInsert.GetHash();
             var newBit = newHash[block.LocalDepth - 1];
 
             if (!newBlock.IsFull() && newBit)
@@ -316,7 +309,6 @@ namespace AAUS2_HeapFile.Files
         public void SavePropsIntoFile(string fileName)
         {
             StreamWriter writer = new StreamWriter(fileName);
-            writer.WriteLine($"Property,{(int)Prop}");
             writer.WriteLine($"GlobalDepth,{GlobalDepth}");
             writer.Write("Directory,");
             for (int i = 0; i < Directory.Length; i++)
@@ -347,11 +339,7 @@ namespace AAUS2_HeapFile.Files
             {
                 var line = reader.ReadLine();
                 var parts = line.Split(',');
-                if (parts[0] == "Property")
-                {
-                    Prop = (HashProperty)int.Parse(parts[1]);
-                }
-                else if (parts[0] == "GlobalDepth")
+                if (parts[0] == "GlobalDepth")
                 {
                     GlobalDepth = int.Parse(parts[1]);
                 }
