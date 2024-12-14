@@ -154,7 +154,7 @@ namespace AAUS2_SemPraca
 
         private void licencePlatesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var hashForm = new Sequential(_project.SequentialID()))
+            using (var hashForm = new Sequential(_project.SequentialLP()))
             {
                 if (hashForm.ShowDialog() == DialogResult.OK)
                 {

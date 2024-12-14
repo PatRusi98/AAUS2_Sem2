@@ -17,10 +17,8 @@ namespace AAUS2_HeapFile.Helpers
         private Handler()
         {
             Data = new("data.dat", 6000);
-            IDAddresses = new("id.dat", 6000);
-            IDAddresses.LoadPropsFromFile("id_props.txt");
-            LPAddresses = new("lp.dat", 6000);
-            LPAddresses.LoadPropsFromFile("lp_props.txt");
+            IDAddresses = new("id.dat", "id_props.txt", 6000);
+            LPAddresses = new("lp.dat", "lp_props.txt", 6000);
         }
 
         public static Handler Instance

@@ -1,6 +1,7 @@
 ﻿using AAUS2_HeapFile.Interfaces;
 using System;
 using System.Collections;
+using System.Text;
 using static AAUS2_HeapFile.Helpers.Enums;
 
 namespace AAUS2_HeapFile.Files
@@ -12,18 +13,22 @@ namespace AAUS2_HeapFile.Files
         private int BlockSize { get; set; }
         private int GlobalDepth { get; set; }
 
-        public ExtendibleHashing(string hashFileName, int blockSize)
+        public ExtendibleHashing(string hashFileName, string fileName, int blockSize)
         {
             BlockSize = blockSize;
             GlobalDepth = 1;
             Directory = new long[1 << GlobalDepth];
 
             _hashFile = new HashFile<T>(hashFileName, blockSize);
+            var loadedFile = LoadPropsFromFile(fileName);
 
-            for (int i = 0; i < Directory.Length; i++)
+            if (!loadedFile)
             {
-                long address = _hashFile.CreateNewBlock();
-                Directory[i] = address;
+                for (int i = 0; i < Directory.Length; i++)
+                {
+                    long address = _hashFile.CreateNewBlock();
+                    Directory[i] = address;
+                }
             }
         }
 
@@ -324,14 +329,30 @@ namespace AAUS2_HeapFile.Files
 
         public string SequentialToString()
         {
-            return _hashFile.SequentialToString();
+            var address = 0;
+            StringBuilder sb = new();
+
+            sb.AppendLine("HEADER:");
+            sb.AppendLine("Block size: " + BlockSize);
+            sb.AppendLine("Global depth: " + GlobalDepth);
+            sb.AppendLine("**********************************************************************************************");
+
+            while (address < _hashFile.GetFileLength())
+            {
+                sb.AppendLine("BLOCK " + address + ":");
+                var block = _hashFile.GetBlockFromFile(address);
+                sb.AppendLine(block.ToString());
+                sb.AppendLine("**********************************************************************************************");
+                address += BlockSize;
+            }
+            return sb.ToString();
         }
 
-        public void LoadPropsFromFile(string fileName)
+        private bool LoadPropsFromFile(string fileName)
         {
             if (!File.Exists(fileName))
             {
-                return;
+                return false;
             }
 
             StreamReader reader = new StreamReader(fileName);
@@ -354,6 +375,7 @@ namespace AAUS2_HeapFile.Files
                 }
             }
             reader.Close();
+            return true;
         }
     }
 }

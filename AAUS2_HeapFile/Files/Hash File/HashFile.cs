@@ -39,14 +39,6 @@ namespace AAUS2_HeapFile.Files
             return address;
         }
 
-        //public void Delete(long address, T record)
-        //{
-        //    // TODO
-        //    var block = GetBlockFromFile(address);
-        //    block.Remove(record);
-        //    InsertBlockIntoFile(address, block);
-        //}
-
         public T? Get(long address, T record)
         {
             var block = GetBlockFromFile(address);
@@ -124,26 +116,6 @@ namespace AAUS2_HeapFile.Files
             }
 
             return records;
-        }
-
-        public string SequentialToString()
-        {
-            StringBuilder sb = new();
-
-            sb.AppendLine("FILE HEADER:");
-            sb.AppendLine("Blocks count: " + BlocksCount);
-            sb.AppendLine("Block factor: " + BlockFactor);
-            sb.AppendLine("Block size: " + BlockSize);
-            sb.AppendLine("**********************************************************************************************");
-
-            for (int i = 0; i < BlocksCount + 1; i++)
-            {
-                sb.AppendLine("BLOCK " + i + ":");
-                var block = GetBlockFromFile(i * BlockSize);
-                sb.AppendLine(block.ToString());
-                sb.AppendLine("**********************************************************************************************");
-            }
-            return sb.ToString();
         }
     }
 }
