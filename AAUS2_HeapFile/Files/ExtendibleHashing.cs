@@ -339,7 +339,7 @@ namespace AAUS2_HeapFile.Files
 
             while (address < _hashFile.GetFileLength())
             {
-                sb.AppendLine("BLOCK " + address + ":");
+                sb.AppendLine("BLOCK ADDRESS " + address + ":");
                 var block = _hashFile.GetBlockFromFile(address);
                 sb.AppendLine(block.ToString());
                 sb.AppendLine("**********************************************************************************************");
