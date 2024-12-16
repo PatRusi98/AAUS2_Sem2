@@ -25,9 +25,9 @@ namespace AAUS2_HeapFile.Tester
             _generator.Random = _random;
             //Debug.WriteLine("Seed: " + seed);
 
-            HeapFile = new HeapFile<Vehicle>("data_" + seed + ".dat", 5000);
-            IDAddresses = new ExtendibleHashing<VehicleIDToHashFile>("id_" + seed + ".dat", "id_" + seed + "_props.txt", 70);
-            LicencePlateAddresses = new ExtendibleHashing<LicencePlateToHashFile>("licencePlate_" + seed + ".dat", "lp_" + seed + "_props.txt", 70);
+            HeapFile = new HeapFile<Vehicle>("data_" + seed + ".dat", 4000);
+            IDAddresses = new ExtendibleHashing<VehicleIDToHashFile>("id_" + seed + ".dat", "id_" + seed + "_props.txt", 100);
+            LicencePlateAddresses = new ExtendibleHashing<LicencePlateToHashFile>("licencePlate_" + seed + ".dat", "lp_" + seed + "_props.txt", 100);
         }
 
         public void TestInsert(int numberOfEntities, bool clearFile = false)

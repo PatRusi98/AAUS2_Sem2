@@ -40,8 +40,11 @@ namespace AAUS2_HeapFile.Files
         public long Insert(T record)
         {
             Block<T> block = new(BlockSize);
+            var address = (long)-1;
 
-            var address = PartiallyEmptyBlockAddress;
+            if (block.TotalCount > 1)
+                address = PartiallyEmptyBlockAddress;
+
             if (PartiallyEmptyBlockAddress == -1)
                 address = EmptyBlockAddress;
 
@@ -53,7 +56,8 @@ namespace AAUS2_HeapFile.Files
                 block.PreviousEmptyBlockAddress = -1;
                 block.NextEmptyBlockAddress = -1;
                 InsertBlockIntoFile(add, block);
-                PartiallyEmptyBlockAddress = add;
+                if (block.TotalCount > 1)
+                    PartiallyEmptyBlockAddress = add;
                 return add;
             }
 
@@ -62,7 +66,8 @@ namespace AAUS2_HeapFile.Files
 
             if (block.ValidCount == block.TotalCount) // osetrenie retazenia
             {
-                PartiallyEmptyBlockAddress = block.NextEmptyBlockAddress;
+                if (block.TotalCount > 1)
+                    PartiallyEmptyBlockAddress = block.NextEmptyBlockAddress;
 
                 if (PartiallyEmptyBlockAddress != -1)
                 {
@@ -73,7 +78,8 @@ namespace AAUS2_HeapFile.Files
             }
             else if (block.ValidCount == 1)
             {
-                EmptyBlockAddress = block.NextEmptyBlockAddress;
+                if (block.TotalCount > 1)
+                    EmptyBlockAddress = block.NextEmptyBlockAddress;
                 if (EmptyBlockAddress != -1)
                 {
                     var nextBlock = GetBlockFromFile(EmptyBlockAddress);
@@ -81,7 +87,8 @@ namespace AAUS2_HeapFile.Files
                     InsertBlockIntoFile(EmptyBlockAddress, nextBlock);
                 }
 
-                PartiallyEmptyBlockAddress = address; // staci takto lebo ked budeme vkladat do prazdneho tak to znamena, ze ciastocne volny neni
+                if (block.TotalCount > 1)
+                    PartiallyEmptyBlockAddress = address; // staci takto lebo ked budeme vkladat do prazdneho tak to znamena, ze ciastocne volny neni
             }
 
             InsertBlockIntoFile(address, block);
@@ -111,7 +118,8 @@ namespace AAUS2_HeapFile.Files
                 }
                 else
                 {
-                    PartiallyEmptyBlockAddress = block.NextEmptyBlockAddress;
+                    if (block.TotalCount > 1)
+                        PartiallyEmptyBlockAddress = block.NextEmptyBlockAddress;
                     if (PartiallyEmptyBlockAddress != -1)
                     {
                         var nextBlock = GetBlockFromFile(PartiallyEmptyBlockAddress);
@@ -162,7 +170,8 @@ namespace AAUS2_HeapFile.Files
                 if (EmptyBlockAddress != -1)
                 {
                     var emptyBlock = GetBlockFromFile(EmptyBlockAddress);
-                    emptyBlock.PreviousEmptyBlockAddress = address;
+                    if (block.TotalCount > 1)
+                        emptyBlock.PreviousEmptyBlockAddress = address;
                     InsertBlockIntoFile(EmptyBlockAddress, emptyBlock);
                 }
 
@@ -182,7 +191,8 @@ namespace AAUS2_HeapFile.Files
                 }
 
                 block.NextEmptyBlockAddress = PartiallyEmptyBlockAddress;
-                PartiallyEmptyBlockAddress = address;
+                if (block.TotalCount > 1)
+                    PartiallyEmptyBlockAddress = address;
             }
 
             if (!deletedLast)
